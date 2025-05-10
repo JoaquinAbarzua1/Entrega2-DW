@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajedrez Online - Inicio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="body-1">
+    <header class="figura-2">
+      <div class="header-content">
+        <h1>Ajedrez En Linea</h1>
+        <p class="tagline">¡Juega ajedrez en línea contra tus amigos!</p>
+      </div>
+    </header>
+
+    <main class="contenido-principal">
+      <section class="figura-1">
+        <form class="login-form" action="principal.html" method="get">
+          <h2>Iniciar Sesión</h2>
+
+          <div class="form-group">
+            <label for="email">Correo electrónico</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="holachao@ejemplo.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-login">Entrar</button>
+
+          <p class="register-link">
+            ¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a>
+            <a href="perfil.html">perfil aqui</a>
+          </p>
+
+          <div class="about-section">
+            <h2>¿Qué es Ajedrez Online?</h2>
+            <p>
+              Una plataforma para disfrutar del juego de ajedrez en línea. Crea
+              una cuenta gratis para poder disfrutar de:
+            </p>
+          </div>
+          <ul class="features-list">
+            <li>Jugar partidas en tiempo real</li>
+            <li>Retomar partidas guardadas</li>
+            <li>Observar partidas públicas</li>
+            <li>Mejorar tu ranking</li>
+          </ul>
+        </form>
+      </section>
+    </main>
+
+    <footer class="figura-3">
+      <nav class="footer-nav">
+        <a href="historia.html">Historia del ajedrez</a>
+        <a href="desarrolladores.html">Conoce a los desarrolladores</a>
+      </nav>
+    </footer>
+  </body>
+</html>

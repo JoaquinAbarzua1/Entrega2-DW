@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil - Ajedrez Online</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="body-perfil">
+    <header class="site-header">
+      <h1>Mi Perfil</h1>
+      <p>Personaliza tu experiencia de ajedrez</p>
+    </header>
+
+    <nav class="main-nav">
+      <ul>
+        <li style="color: #ffffffa4">
+          <a href="index.html" style="color: #dae7d0">Inicio </a>
+        </li>
+        <li style="color: #ffffffa4">
+          <a href="principal.html" style="color: #dae7d0">Principal</a>
+        </li>
+        <li style="color: #ffffffa4">
+          <a href="partida.html" style="color: #dae7d0">Partida</a>
+        </li>
+        <li style="color: #ffffffa4">
+          <a href="historia.html" style="color: #dae7d0">Historia</a>
+        </li>
+        <li style="color: #ffffffa4">
+          <a href="desarrolladores.html" style="color: #dae7d0"
+            >Desarrolladores</a
+          >
+        </li>
+        <li style="color: #ffffffa4">
+          <a href="index.html" class="logout" style="color: #dae7d0"
+            >Cerrar sesión</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <main class="profile-container">
+      <section class="profile-info">
+        <div class="avatar-section">
+          <div class="avatar-preview">
+            <img
+              src="https://via.placeholder.com/150"
+              alt="Avatar"
+              id="avatar-preview"
+            />
+          </div>
+          <form class="avatar-form">
+            <input type="file" id="avatar-upload" accept="image/*" />
+            <button type="button" class="btn-upload">Cambiar avatar</button>
+          </form>
+        </div>
+
+        <div class="profile-details">
+          <h2>Información personal</h2>
+          <form class="profile-form">
+            <div class="form-group">
+              <label for="username">Nombre de usuario:</label>
+              <input type="text" id="username" value="JohnFrez12" />
+            </div>
+            <div class="form-group">
+              <label for="email">Correo electrónico:</label>
+              <input type="email" id="email" value="tumismo@ejemplo.com" />
+            </div>
+            <div class="form-group">
+              <label for="country">País:</label>
+              <select id="country">
+                <option value="cl">Chile</option>
+                <option value="ar">Argentina</option>
+                <option value="mx">México</option>
+                <option value="es">Antigua y Barbuda</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="bio">Biografía:</label>
+              <textarea id="bio">
+Dedicado a jugar lol y con un gusto por los rompecabezas</textarea
+              >
+            </div>
+            <button type="submit" class="btn-save">Guardar cambios</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="password-change">
+        <h2>Cambiar contraseña</h2>
+        <form class="password-form">
+          <div class="form-group">
+            <label for="current-password">Contraseña actual:</label>
+            <input type="password" id="current-password" />
+          </div>
+          <div class="form-group">
+            <label for="new-password">Nueva contraseña:</label>
+            <input type="password" id="new-password" />
+          </div>
+          <div class="form-group">
+            <label for="confirm-password">Confirmar nueva contraseña:</label>
+            <input type="password" id="confirm-password" />
+          </div>
+          <button type="submit" class="btn-change">Cambiar contraseña</button>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-links">
+        <a href="historia.html">Reglas e Historia del Ajedrez</a>
+        <a href="desarrolladores.html"
+          >Desarrollado por: Joaquín Abarzúa, Pedro Rojas</a
+        >
+      </div>
+    </footer>
+  </body>
+</html>
