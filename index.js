@@ -5,10 +5,13 @@ const bodyParser = require('body-parser')
 const app = express()
 const port = 80
 
-/////////////////////////////////////////////////////////////////////////////////////////////ALGO NO FUNCIONA DE MONGOOSE, lo dejaré comentado
-//Base de datos
-/*
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+//Base de datos
+
+/* QUEDA COMENTADO PORQUE SE SUPONE QUE AÚN NO HAY QUE USAR BASE DE DATOS
 const mongoose = require('mongoose')
 
 const UsuarioSchema = new mongoose.Schema({
@@ -29,33 +32,9 @@ mongoose.connect('mongodb+srv://joaquinabarzua:admin@cluster0.avkv65o.mongodb.ne
   console.error('Error conectando a MongoDB', err)
 })
 
-app.post('/register', async (req, res) => {
-  const { username, password } = req.body
-  const nuevoUsuario = new Usuario({ username, password })
-  await nuevoUsuario.save()
-  res.send('Usuario registrado con éxito')
-})
-
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body
-
-  try {
-    const usuario = await Usuario.findOne({ username, password })
-
-    if (!usuario) {
-      return res.send('Credenciales inválidas. <a href="/login">Intentar de nuevo</a>')
-    }
-
-    res.render('welcome', { username })
-  } catch (err) {
-    console.error('Error al buscar usuario:', err)
-    res.send('Error interno del servidor')
-  }
-})
+*/
 
 ////////////////////////////////////////////////////////////////////
-
-*/
 
 // Configurar Handlebars con layout por defecto
 app.engine('handlebars', engine({defaultLayout: 'main'}))
@@ -65,11 +44,12 @@ app.set('views', './views')
 //Activa body-parser para leer formularios
 app.use(bodyParser.urlencoded({ extended: true }))
 
+
 //Crea base de datos temporal
 const usuarios = []
 
 // Ruta principal que renderiza index.handlebars
-//comentado
+//comentado para evitar confusiones
 /*app.get('/', (req, res) => {
   res.render('index', {
     titulo: 'Hello World!',
@@ -88,6 +68,7 @@ app.get('/register', (req, res) => {
 })
 
 //Ruta POST para registrar un nuevo usuario
+
 app.post('/register', (req, res) => {
   const { username, password } = req.body
   const existe = usuarios.find(u => u.username === username)
@@ -98,12 +79,24 @@ app.post('/register', (req, res) => {
   res.redirect('/login')
 })
 
+
+//post que usa mongoose
+/*
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body
+  const nuevoUsuario = new Usuario({ username, password })
+  await nuevoUsuario.save()
+  res.send('Usuario registrado con éxito')
+})
+*/
+
 //Ruta GET para mostrar formulario de login
 app.get('/login', (req, res) => {
   res.render('login')
 })
 
 //Ruta POST para autenticar usuario
+
 app.post('/login', (req, res) => {
   const { username, password } = req.body
   const usuario = usuarios.find(u => u.username === username && u.password === password)
@@ -111,6 +104,27 @@ app.post('/login', (req, res) => {
   if (!usuario) {return res.send('Credenciales inválidas. <a href="/login">Intentar de nuevo</a>')}
   res.render('welcome', { username })
 })
+
+
+//post que usa mongoose
+/*
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body
+
+  try {
+    const usuario = await Usuario.findOne({ username, password })
+
+    if (!usuario) {
+      return res.send('Credenciales inválidas. <a href="/login">Intentar de nuevo</a>')
+    }
+
+    res.render('welcome', { username })
+  } catch (err) {
+    console.error('Error al buscar usuario:', err)
+    res.send('Error interno del servidor')
+  }
+})
+*/
 
 //Ruta raíz
 app.get('/', (req, res) => {
