@@ -21,7 +21,7 @@ const UsuarioSchema = new mongoose.Schema({
 
 const Usuario = mongoose.model('Usuario', UsuarioSchema)
 
-mongoose.connect('mongodb+srv://joaquinabarzua:admin@cluster0.avkv65o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://joaquinabarzua:<contraseña>@cluster0.avkv65o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -59,7 +59,7 @@ const usuarios = []
 
 // Ruta adicional sin plantilla
 app.get('/despedirse', (req, res) => {
-  res.send('Bye World!')
+  res.send('Bye cruel World!')
 })
 
 //Ruta GET para mostrar formulario de registro
