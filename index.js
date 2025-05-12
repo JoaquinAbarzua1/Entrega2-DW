@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
   res.render('index', {
     layout: false,
     titulo: 'Hello World!',
-    mensaje: 'Bienvenido a mi app usando Handlebars 😎'
+    mensaje: 'Bienvenido a mi app usando Handlebars pene chistoso'
   })
 })
 
