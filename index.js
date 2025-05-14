@@ -130,9 +130,10 @@ app.post('/login', async (req, res) => {
 */
 
 //Ruta raíz
-app.get('/', estaLoggeado ,(req, res) => {
+//app.get('/', estaLoggeado ,(req, res) => { //hacer funcion estaLogeado
+app.get('/', (req, res) =>
   res.render('principal')
-})
+)
 
 //agregar resto de rutas
 
