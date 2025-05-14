@@ -37,9 +37,12 @@ mongoose.connect('mongodb+srv://joaquinabarzua:<contraseña>@cluster0.avkv65o.mo
 ////////////////////////////////////////////////////////////////////
 
 // Configurar Handlebars con layout por defecto
+
 app.engine('handlebars', engine({defaultLayout: 'main'}))
 app.set('view engine', 'handlebars')
+app.use(express.static('public'));
 app.set('views', './views')
+
 
 //Activa body-parser para leer formularios
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -63,17 +66,17 @@ app.get('/despedirse', (req, res) => {
 })
 
 //Ruta GET para mostrar formulario de registro
-app.get('/register', (req, res) => {
-  res.render('register')
+app.get('/registro', (req, res) => {
+  res.render('registro')
 })
 
 //Ruta POST para registrar un nuevo usuario
 
-app.post('/register', (req, res) => {
+app.post('/registrarse', (req, res) => {
   const { username, password } = req.body
   const existe = usuarios.find(u => u.username === username)
 
-  if (existe) {return res.send('Usuario ya existe. <a href="/register">Volver</a>')}
+  if (existe) {return res.send('Usuario ya existe. <a href="/registro">Volver</a>')}
 
   usuarios.push({ username, password })
   res.redirect('/login')
@@ -127,10 +130,15 @@ app.post('/login', async (req, res) => {
 */
 
 //Ruta raíz
-app.get('/', (req, res) => {
-  res.redirect('/login')
+app.get('/', estaLoggeado ,(req, res) => {
+  res.render('principal')
 })
 
+//agregar resto de rutas
+
+//hacer funcion para verificar conexion (que esté logeado), por ahora cada vez que abra la pagina, mandará a principal
+//true res.render()
+//false res.redirect('login)
 
 //Iniciar el servidor
 app.listen(port, () => {

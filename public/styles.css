@@ -1,0 +1,252 @@
+/* Estructura general */
+.figura-1{ /* ventana (iniciar sesion) */
+  width: 60%;
+  position: absolute;
+  height: 50%;
+  left: 3.5em;
+}
+/* Formulario */
+.login-form {
+  background: rgba(255, 255, 255, 0.856);
+  padding: 3em;
+  border-radius: 15%;
+  box-shadow: 0 0.5em 0.7em rgb(0, 0, 0);
+}
+.about-section{
+  position: absolute;
+  font-size: large;
+  top: 50px;
+  left: 290px;
+}
+.features-list{
+position: absolute;
+  font-size: large;
+  top: 170px;
+  left: 300px;
+}
+.figura-2 { /* marco superior (header) */
+  background-color: #485e6d;
+  color: rgb(255, 255, 255);
+  padding: 2em 0;
+  width: 100%;
+  text-align: center;
+}
+.header-content { /* contenido 1 de (figura 2) */
+  max-width: 800px;
+  text-align: center;
+  width: 100%;
+}
+.tagline { /* contenido 2 de figura 2 */
+  font-family: 'Times New Roman', Times, serif;
+  margin-top: 0.7em;
+}
+.body-1{ 
+background-image: url("/img/fondo 1real.jpg"); /* imagen toa fea xd */
+background-size: cover;
+background-position: center;
+background-attachment: fixed;
+}
+.contenido-principal {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 3em auto;
+  gap: 2em;
+}
+.form-group {
+  margin-bottom: 2em;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.55em;
+  font-weight: bold;
+}
+
+/* Footer */
+.figura-3 { /* conoce a los desarrolladores */
+  background-color: #34495e;
+  position: absolute;
+  bottom: 0%;
+  height: 5%;
+  width: 100%;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  padding: 1em 0;
+  margin-top: 2em;
+}
+
+.footer-nav {
+  margin-bottom: 2em;
+  font-size: large;
+  margin: auto;
+}
+
+.footer-nav a {
+  color: #ecf0f1;
+  margin: 0 1em;
+}
+.body-2
+{
+  background-image: url(../Ajedrez/registro\ fondo\ tuning.jpg);
+}
+
+.register-form{
+  background-color: rgba(255, 255, 255, 0.856);
+  width: 20%;
+  position: absolute;
+  padding: 2em;
+  bottom:10%;
+  border-radius: 20px;
+  box-shadow: 0px 5px 15px black;
+
+}
+.site-header{
+  position: relative;
+  background: #ffffff;
+  font-size: large;
+  width: 20%;
+  padding: 1em;
+  height: 16%;
+  left: 0%;
+  border-radius: 20px;
+  box-shadow: 0px 5px 15px black;
+}
+.register-benefits{
+  background: rgba(198, 252, 225);
+  padding: 1em;
+  width: 58%;
+  position: absolute;
+  border-radius: 15%;
+  top: 1%;
+  left: 24%;
+  box-shadow: 0 0.5em 1 black;
+}
+.main-nav{
+  background-color: #181818;
+  height: 15%;
+  padding: 1em;
+  position: absolute;
+  left:85%;
+  bottom:80%;
+  width: 10%;
+  border-radius: 20%;
+  box-shadow: 0px 5px 15px black;
+}
+.main-nav a:hover,
+.main-nav a.active {
+  position: absolute;
+  background-color: #8ec0e280;
+  border-radius: 2em;
+}
+.main-navprincipal{
+  background-color: #e2dcb6d7;
+  position: absolute;
+  width: 20%;
+  height: 15%;
+  padding: 1em;
+  left:85%;
+  bottom: 80%;
+  width: 10%;
+  border-radius: 20%;
+  box-shadow: 0 0.3em 1em black;
+}
+
+
+.footer-links{
+ font-size:large;
+  position: absolute;
+  bottom: 0%;
+}
+.body-perfil{
+  background-color: rgb(206, 182, 182);
+}
+.profile-details{
+  background-color: #6a8597;
+  position: absolute;
+  bottom: 3.8%;
+  width: 20%;
+  height: 64%;
+  border-radius: 1em;
+  padding: 1em;
+  box-shadow:0 0.7em 1em rgba(0, 0, 0, 0.5);
+
+}
+.password-change{
+  background-color: #6978a3;
+  width: 20%;
+  position: absolute;
+  border-radius: 1em;
+  padding: 1em;
+  top: 1%;
+  left: 24%;
+  box-shadow: 0 0.7em 1em rgba(0, 0, 0, 0.349);
+
+}
+.team-member{
+  background: #afc4b2;
+  width:10%;
+  border-radius: 1em;
+  padding: 1em;
+  font-size: medium;
+  box-shadow: 0 0.5em 1em black;
+}
+.avatar-section{
+  width: 20%;
+  padding: 0.5em;
+}
+.dashboard{
+  background: paleturquoise;
+  position:absolute;
+  bottom:3%;
+  width: 30%;
+  height: 80%;
+  border-radius: 1em;
+  padding: 0.5em;
+  box-shadow: 0 0.7em 1em black;
+}
+.stats-section{
+  background-color: #beb6c7;
+  width: 30%;
+  position: relative;
+  left: 2%;
+  border-radius: 1em;
+  padding: 0.5em;
+  box-shadow: 0 0.5em 1em black;
+}
+/* Estilos del tablero */
+.tablero-container {
+  margin: 0 auto;
+  padding: 0;
+}
+
+.tablero {
+  display: grid;
+  grid-template-columns: repeat(8, 60px);
+  grid-template-rows: repeat(8, 60px);
+  border: 3px solid #2c3e50;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  width: calc(60px * 8);
+  height: calc(60px * 8);
+  margin: 20px auto;
+  overflow: hidden;
+}
+
+.casilla {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  user-select: none;
+}
+
+.blanca {
+  background-color: #ffffff;
+}
+
+.negra {
+  background-color: #6376b5;
+  color: white;
+}

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+    <header class="site-header">
+      <h1>Registro de Usuario</h1>
+      <p>Únete a nuestra comunidad de ajedrez</p>
+    </header>
+
+    <nav class="main-nav">
+      <ul>
+        <li style="color: #ffffff">
+          <a href="index.html" style="color: #ffffff">Inicio</a>
+        </li>
+        <li style="color: #ffffff">
+          <a href="registro.html" class="active" style="color: #ffffff"
+            >Registro</a
+          >
+        </li>
+        <li style="color: #ffffff">
+          <a href="historia.html" style="color: #ffffff">Historia</a>
+        </li>
+        <li style="color: #ffffff">
+          <a href="desarrolladores.html" style="color: #ffffff"
+            >Desarrolladores</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <main class="register-container">
+      <section class="register-form">
+        <h2>Crea tu cuenta</h2>
+        <form action="principal.html" method="post">
+          <div class="form-group">
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              class="controls"
+              placeholder="Nombre"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              type="text"
+              id="apellido"
+              name="apellido"
+              class="controls"
+              placeholder="Apellido"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="controls"
+              placeholder="Correo electrónico"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              type="text"
+              id="username"
+              name="username"
+              class="controls"
+              placeholder="Nombre de usuario"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="controls"
+              placeholder="Contraseña"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              type="password"
+              id="confirm-password"
+              name="confirm-password"
+              class="controls"
+              placeholder="Confirmar contraseña"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              type="date"
+              id="birthdate"
+              name="birthdate"
+              class="controls"
+              required
+            />
+            <label for="birthdate">Nacimiento</label>
+          </div>
+
+          <button type="submit" class="buttons">Registrarse</button>
+        </form>
+
+        <div class="login-link">
+          <p>
+            ¿Ya tienes una cuenta? <a href="index.html">Inicia sesión aquí</a>
+          </p>
+        </div>
+      </section>
+
+      <section class="register-benefits">
+        <h2>Beneficios de registrarte</h2>
+        <ul>
+          <li>Guarda tu historial de partidas</li>
+          <li>Accede a estadísticas detalladas</li>
+          <li>Personaliza tu perfil</li>
+          <li>Desafía a otros jugadores</li>
+          <li>Mejora tu ranking ELO</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-links">
+        <a href="historia.html" style="color: #ffffff"
+          >Reglas e Historia del Ajedrez</a
+        >
+        <a href="desarrolladores.html" style="color: #ffffff"
+          >Desarrollado por: Joaquín Abarzúa, Pedro Rojas</a
+        >
+      </div>
+    </footer>

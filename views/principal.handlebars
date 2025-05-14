@@ -1,0 +1,87 @@
+
+    <header>
+      <h1>Bienvenido usuario</h1>
+      <h2>Tus estadísticas y datos de tus partidas</h2>
+    </header>
+
+    <nav class="main-navprincipal">
+      <ul>
+        <li><a href="index.html" style="color: black">Inicio</a></li>
+        <li><a href="perfil.html" style="color: black">Perfil</a></li>
+        <li><a href="partida.html" style="color: black">Partida</a></li>
+        <li><a href="historia.html" style="color: black">Historia</a></li>
+        <li>
+          <a href="desarrolladores.html" style="color: black"
+            >Desarrolladores</a
+          >
+        </li>
+        <li>
+          <a href="index.html" class="logout" style="color: black"
+            >Cerrar sesión</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <main class="dashboard">
+      <section class="stats-section">
+        <h2>Estadísticas</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Victorias</h3>
+            <p>24</p>
+          </div>
+          <div class="stat-card">
+            <h3>Empates</h3>
+            <p>12</p>
+          </div>
+          <div class="stat-card">
+            <h3>Derrotas</h3>
+            <p>18</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Partidas en curso</h2>
+        <ul class="game-list">
+          <li>
+            <a href="partida.html" style="color: black">Partida #1 vs CPU</a>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Partidas públicas</h2>
+        <ul class="game-list">
+          <li>
+            <a href="partida.html" style="color: black">Partida pública #1 </a>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Nueva partida</h2>
+        <form>
+          <select name="game-type">
+            <option value="public">Pública (cualquiera puede unirse)</option>
+            <option value="private">Privada (solo con invitación)</option>
+          </select>
+          <button type="submit">Crear Partida</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>Historial</h2>
+        <table class="history-table">
+          <tr>
+            <th>Partida</th>
+            <th>Resultado</th>
+          </tr>
+          <tr>
+            <td>#1 vs CPU</td>
+            <td>Derrota</td>
+          </tr>
+        </table>
+      </section>
+    </main>
