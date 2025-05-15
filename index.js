@@ -121,7 +121,7 @@ app.post('/login', async (req, res) => {
       return res.send('Credenciales inválidas. <a href="/login">Intentar de nuevo</a>')
     }
 
-    res.render('welcome', { username })
+    res.render('Profewelcome', { username })
   } catch (err) {
     console.error('Error al buscar usuario:', err)
     res.send('Error interno del servidor')
