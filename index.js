@@ -137,6 +137,21 @@ app.get('/', (req, res) =>
 
 //agregar resto de rutas
 
+//Ruta GET para mostrar desarrolladores
+app.get('/desarrolladores', (req, res) => {
+  res.render('desarrolladores')
+})
+
+//Ruta GET para mostrar formulario de registro
+app.get('/historia', (req, res) => {
+  res.render('historia')
+})
+
+//Ruta GET para mostrar formulario de registro
+app.get('/partida', (req, res) => {
+  res.render('partida')
+})
+
 //hacer funcion para verificar conexion (que esté logeado), por ahora cada vez que abra la pagina, mandará a principal
 //true res.render()
 //false res.redirect('login)
