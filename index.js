@@ -5,9 +5,18 @@ const bodyParser = require('body-parser')
 const app = express()
 const port = 80
 
+// Configurar Handlebars con layout por defecto
+
+app.engine('handlebars', engine({defaultLayout: 'main'}))
+app.set('view engine', 'handlebars')
+app.use(express.static('public'));
+app.set('views', './views')
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+//Activa body-parser para leer formularios
+app.use(bodyParser.urlencoded({ extended: true }))
+
+//----------------------------------------------------------------------------------------------------------------------------
 
 //Base de datos
 
@@ -34,23 +43,17 @@ mongoose.connect('mongodb+srv://joaquinabarzua:<contraseña>@cluster0.avkv65o.mo
 
 */
 
-////////////////////////////////////////////////////////////////////
-
-// Configurar Handlebars con layout por defecto
-
-app.engine('handlebars', engine({defaultLayout: 'main'}))
-app.set('view engine', 'handlebars')
-app.use(express.static('public'));
-app.set('views', './views')
+//-----------------------------------------------------------------------------------------------------------------------------------------
 
 
-//Activa body-parser para leer formularios
-app.use(bodyParser.urlencoded({ extended: true }))
 
+//-------------------------------------------------------------------------------------------------------------------------------------------
 
 //Crea base de datos temporal
 const usuarios = []
 
+
+//-------------------------Rutas-------------------------------------------------------------------------------------------
 // Ruta principal que renderiza index.handlebars
 //comentado para evitar confusiones
 /*app.get('/', (req, res) => {
@@ -158,11 +161,17 @@ app.get('/partida', (req, res) => {
   res.render('partida')
 })
 
+
+//-------------Funciones------------------------------------------------------------------------------------------------------------
+
 //hacer funcion para verificar conexion (que esté logeado), por ahora cada vez que abra la pagina, mandará a principal
 //true res.render()
 //false res.redirect('login)
 
+
+//---------------------------------------------------------------------------------------------------------------------------------------
 //Iniciar el servidor
+
 app.listen(port, () => {
   console.log(`App escuchando en http://localhost:${port}`)
 })
