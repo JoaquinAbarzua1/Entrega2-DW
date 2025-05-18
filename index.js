@@ -134,7 +134,13 @@ app.post('/login', async (req, res) => {
 app.get('/', (req, res) =>
   res.render('principal')
 )
+app.get('/principal', (req, res) =>
+  res.render('principal')
+)
 
+app.get('/perfil', (req, res) =>
+  res.render('perfil')
+)
 //agregar resto de rutas
 
 //Ruta GET para mostrar desarrolladores
