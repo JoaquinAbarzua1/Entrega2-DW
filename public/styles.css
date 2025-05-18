@@ -41,7 +41,7 @@ position: absolute;
   margin-top: 0.7em;
 }
 .body-1{ 
-background-image: url("/img/fondo 1real.jpg"); /* imagen toa fea xd */
+background-image: url("../public/img/fondo\ 1real.jpg"); /* imagen toa fea xd */
 background-size: cover;
 background-position: center;
 background-attachment: fixed;
