@@ -8,21 +8,21 @@
 /* Formulario */
 .login-form {
   background: rgba(255, 255, 255, 0.856);
-  padding: 3em;
+  padding: 3rem;
   border-radius: 15%;
   box-shadow: 0 0.5em 0.7em rgb(0, 0, 0);
 }
-.about-section{
-  position: absolute;
+.about-section{ /* cuadro blanco de inicio de sesion (login) */
+  position: relative;
   font-size: large;
-  top: 50px;
-  left: 290px;
+  top: 0rem;
+  left: 23rem;
 }
 .features-list{
 position: absolute;
   font-size: large;
-  top: 170px;
-  left: 300px;
+  top: 1rem;
+  left: 23rem;
 }
 .figura-2 { /* marco superior (header) */
   background-color: #485e6d;
@@ -85,10 +85,6 @@ background-attachment: fixed;
 .footer-nav a {
   color: #ecf0f1;
   margin: 0 1em;
-}
-.body-2
-{
-  background-image: url("/img/registro fondo tuning.jpg");
 }
 
 .register-form{
