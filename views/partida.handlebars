@@ -4,7 +4,8 @@
 
     <div class="tablero piezas">
         <div class="blanco a8">
-            <span class="pieza negra" style="font-size: 2.5rem;">
+            <span class="pieza negra" style="font-size: 2.5rem;"
+                data-info='{"tipo":"torre","color":"negra","x":0,"y":0}'>
                 {{> torre}}
             </span>
         </div>
@@ -278,7 +279,7 @@
 
     
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
         let piezaArrastrada = null;
 
         // Cuando empieza a arrastrar una pieza
@@ -310,3 +311,5 @@
         });
         });
     });
+    </script>
+    
