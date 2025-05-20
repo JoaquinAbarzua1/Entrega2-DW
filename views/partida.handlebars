@@ -1,99 +1,211 @@
-
-    <header>
-      <h1>Partida #1 ♟️</h1>
-      <nav>
-        <a href="principal">Inicio</a>
-        <a href="login">Salir</a>
-      </nav>
+<header>
+        <h1>Tablero Ajedrez</h1>
     </header>
 
-    <main class="partida-container">
-      <div class="jugador-info">
-        <p>Oponente: CPU</p>
-      </div>
-
-      <div class="tablero-container">
-        <div class="tablero">
-          <!-- Fila 1 -->
-          <div class="casilla negra">♜</div>
-          <div class="casilla blanca">♞</div>
-          <div class="casilla negra">♝</div>
-          <div class="casilla blanca">♛</div>
-          <div class="casilla negra">♚</div>
-          <div class="casilla blanca">♝</div>
-          <div class="casilla negra">♞</div>
-          <div class="casilla blanca">♜</div>
-
-          <!-- Fila 2 -->
-          <div class="casilla blanca">♟</div>
-          <div class="casilla negra">♟</div>
-          <div class="casilla blanca">♟</div>
-          <div class="casilla negra">♟</div>
-          <div class="casilla blanca">♟</div>
-          <div class="casilla negra">♟</div>
-          <div class="casilla blanca">♟</div>
-          <div class="casilla negra">♟</div>
-
-          <!-- Filas 3-6 (vacías) -->
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-          <div class="casilla blanca"></div>
-          <div class="casilla negra"></div>
-
-          <!-- Fila 7 -->
-          <div class="casilla negra">♙</div>
-          <div class="casilla blanca">♙</div>
-          <div class="casilla negra">♙</div>
-          <div class="casilla blanca">♙</div>
-          <div class="casilla negra">♙</div>
-          <div class="casilla blanca">♙</div>
-          <div class="casilla negra">♙</div>
-          <div class="casilla blanca">♙</div>
-
-          <!-- Fila 8 -->
-          <div class="casilla blanca">♖</div>
-          <div class="casilla negra">♘</div>
-          <div class="casilla blanca">♗</div>
-          <div class="casilla negra">♕</div>
-          <div class="casilla blanca">♔</div>
-          <div class="casilla negra">♗</div>
-          <div class="casilla blanca">♘</div>
-          <div class="casilla negra">♖</div>
+    <div class="tablero piezas">
+        <div class="blanco a8">
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{> torre}}
+            </span>
         </div>
-      </div>
+        <div class="negro b8" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>caballo}}
+            </span>
+        </div>
+        <div class="blanco c8" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>alfil}}
+            </span>
+        </div>
+        <div class="negro d8" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>reina}}
+            </span>
+        </div>
+        <div class="blanco e8" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>rey}}
+            </span>
+        </div>
+        <div class="negro f8" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>alfil}}
+            </span>
+        </div>
+        <div class="blanco g8" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>caballo}}
+            </span>
+        </div>
+        <div class="negro h8" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>torre}}
+            </span>
+        </div>
 
-      <div class="jugador-info">
+        <div class="negro a7" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="blanco b7">
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="negro c7" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="blanco d7" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="negro e7" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="blanco f7" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="negro h7" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="blanco g7" >
+            <span class="pieza negra" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+
+        <div class="blanco a6"></div>
+        <div class="negro b6"></div>
+        <div class="blanco c6"></div>
+        <div class="negro d6"></div>
+        <div class="blanco e6"></div>
+        <div class="negro f6"></div>
+        <div class="blanco g6"></div>
+        <div class="negro h6"></div>
+
+        <div class="negro a5"></div>
+        <div class="blanco b5"></div>
+        <div class="negro c5"></div>
+        <div class="blanco d5"></div>
+        <div class="negro e5"></div>
+        <div class="blanco f5"></div>
+        <div class="negro g5"></div>
+        <div class="blanco h5"></div>
+
+        <div class="blanco a4"></div>
+        <div class="negro b4"></div>
+        <div class="blanco c4"></div>
+        <div class="negro d4"></div>
+        <div class="blanco e4"></div>
+        <div class="negro f4"></div>
+        <div class="blanco g4"></div>
+        <div class="negro h4"></div>
+
+        <div class="negro a3"></div>
+        <div class="blanco b3"></div>
+        <div class="negro c3"></div>
+        <div class="blanco d3"></div>
+        <div class="negro e3"></div>
+        <div class="blanco f3"></div>
+        <div class="negro g3"></div>
+        <div class="blanco h3"></div>
+
+
+        <div class="blanco a2">
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="negro b2" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="blanco c2" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="negro d2">
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="blanco e2" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="negro f2" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="blanco g2" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+        <div class="negro h2" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>peon}}
+            </span>
+        </div>
+
+        <div class="negro a1 " >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>torre}}
+            </span>
+        </div>
+        <div class="blanco b1" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>caballo}}
+            </span>
+        </div>
+        <div class="negro c1" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>alfil}}
+            </span>
+        </div>
+        <div class="blanco d1" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>reina}}
+            </span>
+        </div>
+        <div class="negro e1" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>rey}}
+            </span>
+        </div>
+        <div class="blanco f1" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>alfil}}
+            </span>
+        </div>
+        <div class="negro g1" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>caballo}}
+            </span>
+        </div>
+        <div class="cuadro blanco h1" >
+            <span class="pieza blanca" style="font-size: 2.5rem;">
+                {{>torre}}
+            </span>
+        </div>
+    </div>
+
+    <div class="jugador-info">
         <p>Tú: Invitado</p>
       </div>
 
@@ -125,7 +237,77 @@
       </nav>
     </footer>
 
-    <script> partida.js/* 
+    <script src="/public/js/partida.js">
+    
+    </script>
 
-      
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.pieza').forEach(pieza => {
+        pieza.setAttribute('draggable', 'true');
+        });
+    });
+
+    let x = 1;
+    let pos = 0;
+    let y = ["a", "b", "c", "d", "e", "f", "g"];
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.cuadro').forEach(pieza => {
+            cuadro.classList.add(y[pos]+x);
+            if(x <= 8){
+                x++;
+            }
+            else{
+                pos++;
+            }
+        });
+    });
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        var tablero = document.querySelector('.tablero');
+
+        for(let i = 0; i<8; i++){
+            for(let j = 0; j<8; j++){
+            for(let i = 0; i<8; i++){
+            
+        }
+            }
+        }
+    });
+    </script>
+
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let piezaArrastrada = null;
+
+        // Cuando empieza a arrastrar una pieza
+        document.querySelectorAll(".pieza").forEach(pieza => {
+        pieza.addEventListener("dragstart", (e) => {
+            piezaArrastrada = pieza;
+            setTimeout(() => pieza.style.display = "none", 0);
+        });
+
+        pieza.addEventListener("dragend", (e) => {
+            pieza.style.display = "";
+        });
+        });
+
+        // Habilita cada casilla como zona de "soltar"
+        document.querySelectorAll(".tablero > div").forEach(casilla => {
+        casilla.addEventListener("dragover", (e) => {
+            e.preventDefault(); // Necesario para permitir drop
+        });
+
+        casilla.addEventListener("drop", (e) => {
+            e.preventDefault();
+            if (piezaArrastrada) {
+            // Evita que se agregue más de una pieza en la misma casilla
+            casilla.innerHTML = "";
+            casilla.appendChild(piezaArrastrada);
+            piezaArrastrada = null;
+            }
+        });
+        });
+    });
     </script>

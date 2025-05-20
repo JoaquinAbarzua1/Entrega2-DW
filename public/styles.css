@@ -213,36 +213,26 @@ background-attachment: fixed;
 /* Estilos del tablero */
 .tablero-container {
   margin: 0 auto;
-  padding: 0;
+  padding: 0em;
 }
 
 .tablero {
   display: grid;
   grid-template-columns: repeat(8, 60px);
   grid-template-rows: repeat(8, 60px);
-  border: 3px solid #2c3e50;
+  border: 2px solid #000000;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   width: calc(60px * 8);
   height: calc(60px * 8);
-  margin: 20px auto;
-  overflow: hidden;
+  margin: 0% auto;
+  
 }
 
-.casilla {
-  width: 60px;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 40px;
-  user-select: none;
-}
 
-.blanca {
+.blanco {
   background-color: #ffffff;
 }
 
-.negra {
-  background-color: #6376b5;
-  color: white;
+.negro {
+  background-color: #977aff;
 }
