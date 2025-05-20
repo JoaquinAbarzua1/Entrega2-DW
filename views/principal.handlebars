@@ -3,25 +3,14 @@
       <h1>Bienvenido usuario</h1>
       <h2>Tus estadísticas y datos de tus partidas</h2>
     </header>
-
-    <nav class="main-navprincipal">
-      <ul>
-        <li><a href="principal" style="color: black">Inicio</a></li>
-        <li><a href="perfil" style="color: black">Perfil</a></li>
-        <li><a href="partida" style="color: black">Partida</a></li>
-        <li><a href="historia" style="color: black">Historia</a></li>
-        <li>
-          <a href="desarrolladores" style="color: black"
-            >Desarrolladores</a
-          >
-        </li>
-        <li>
-          <a href="login" class="logout" style="color: black"
-            >Cerrar sesión</a
-          >
-        </li>
-      </ul>
-    </nav>
+<style>
+  body{
+    background-image: url('img/fondoperfil.png');
+            background-size: cover;
+background-position: center;
+background-attachment: fixed
+  }
+</style>
 
     <main class="dashboard">
       <section class="stats-section">
@@ -41,7 +30,24 @@
           </div>
         </div>
       </section>
-
+    <nav class="main-navprincipal">
+      <ul>
+        <li><a href="principal" style="color: black">Inicio</a></li>
+        <li><a href="perfil" style="color: black">Perfil</a></li>
+        <li><a href="partida" style="color: black">Partida</a></li>
+        <li><a href="historia" style="color: black">Historia</a></li>
+        <li>
+          <a href="desarrolladores" style="color: black"
+            >Desarrolladores</a
+          >
+        </li>
+        <li>
+          <a href="login" class="logout" style="color: black"
+            >Cerrar sesión</a
+          >
+        </li>
+      </ul>
+    </nav>
       <section>
         <h2>Partidas en curso</h2>
         <ul class="game-list">

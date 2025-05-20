@@ -135,20 +135,6 @@ background-attachment: fixed;
   background-color: #8ec0e280;
   border-radius: 2em;
 }
-.main-navprincipal{
-  background-color: #e2dcb6d7;
-  position: absolute;
-  width: 20%;
-  height: 15%;
-  padding: 1em;
-  left:85%;
-  bottom: 80%;
-  width: 10%;
-  border-radius: 20%;
-  box-shadow: 0 0.3em 1em black;
-}
-
-
 .footer-links{
  font-size:large;
   position: absolute;
@@ -181,7 +167,7 @@ background-attachment: fixed;
 }
 .team-member{
   background: #afc4b2;
-  width:10%;
+  width:15em;
   border-radius: 1em;
   padding: 1em;
   font-size: medium;
@@ -192,23 +178,34 @@ background-attachment: fixed;
   padding: 0.5em;
 }
 .dashboard{
-  background: paleturquoise;
+  background: rgb(237, 247, 105);
+  position:relative;
+  bottom:-1rem;
+  width: 25rem;
+  height: 50rem;
+  border-radius: 1rem;
+  padding: 0.5rem;
+  box-shadow: 0 0.7rem 1rem black;
+}
+.main-navprincipal{
+  background-color: #9dffb2d7;
   position:absolute;
-  bottom:3%;
-  width: 30%;
-  height: 80%;
-  border-radius: 1em;
-  padding: 0.5em;
-  box-shadow: 0 0.7em 1em black;
+  bottom: 48em;
+  padding: 1em;
+  width: 25rem;
+  right: -35em;
+  border-radius: 2em;
+  box-shadow: 0 0.7em 1em #000000;
+  
+
 }
 .stats-section{
   background-color: #beb6c7;
-  width: 30%;
+  width: 15em;
   position: relative;
-  left: 2%;
+  left: 0.5em;
   border-radius: 1em;
   padding: 0.5em;
-  box-shadow: 0 0.5em 1em black;
 }
 /* Estilos del tablero */
 .tablero-container {
