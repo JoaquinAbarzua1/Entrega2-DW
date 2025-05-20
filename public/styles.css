@@ -227,7 +227,10 @@ background-attachment: fixed;
   margin: 0% auto;
   
 }
-
+.pieza{ /* PIEZAS DEL AJEDREZ */
+  color: #000000;
+  margin-left: 10%;
+}
 
 .blanco {
   background-color: #ffffff;
