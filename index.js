@@ -162,7 +162,7 @@ app.get('/desarrolladores', (req, res) => {
 //Ruta GET para mostrar formulario de registro
 app.get('/historia', (req, res) => {
   res.render('historia')
-})
+});
 
 //Ruta GET para mostrar formulario de registro
 app.get('/partida', (req, res) => {
@@ -170,6 +170,31 @@ app.get('/partida', (req, res) => {
   res.render('partida', { tablero });
 })
 
+
+// RUTA PARA NUEVA PARTIDA 
+app.post('/nueva-partida', (req,res) =>{
+  //Aqui iria la logica para reiniciar el estado del juego
+  //Por ahora simplemente se redigira a la misma pagina de esta forma
+  res.redirect('/partida'); // despues se tendra que hacer otras cosas pero por ahora se queda asi.
+});
+
+
+//RUTA PARA RENDIRSE
+app.post('/rendirse', (req,res)=>{
+  //Logica para registrar rendirse
+  //En un juego real, esto actualizaria la base de datos, ojo con esto mas a futuro
+  res.json({
+    result: 'Derrota por rendicion' , success: true
+  });
+});
+
+//RUTA PARA EMPATAR
+app.post('/empatar', (req,res) =>{
+// Cuando se juegue con otro jugador se tendra que implementar algo que le notifique que su oponente quiere tablas xd
+res.json({
+  status: 'Empate ofrecido. Espera la respuesta de tu oponente..' , success: true
+});
+});
 
 //-------------Funciones------------------------------------------------------------------------------------------------------------
 
