@@ -9,6 +9,7 @@ let numeroMovimiento =1;
             negras: "Jugador 2"
         };
 
+
         //Funcion CambiarTurno
 
         function CambiarTurno(pieza, desde, hacia) {
@@ -18,6 +19,11 @@ let numeroMovimiento =1;
             const notacion = `${numeroMovimiento}. ${desde} → ${hacia}`;
             registroMovimientos.push(notacion);
             
+            // Persitencia..
+            localStorage.setItem("partidaAjedrez", JSON.stringify({
+                movimientos: registroMovimientos , turno: turnoActual , numeroMovimiento: numeroMovimiento
+            }));
+
             // actualizar lista de movimientos
             actualizarListaMovimientos();
 
@@ -33,13 +39,21 @@ let numeroMovimiento =1;
             lista.innerHTML = registroMovimientos.map(mov => `<div class=movimiento>${mov}</div>`).join("");
         }
 
+
+
+        // DE AQUI PARA ABAJO PONER NOMBRE A LAS FUNCIONES 
     document.addEventListener("DOMContentLoaded", () => {
+
+        //FUNCION 'CONFIGURAR ELEMENTOS DEL TABLERO'
         document.querySelectorAll(".pieza").forEach(pieza => { 
+        pieza.setAttribute("draggable", "true");
+        });
+
+        //--Info 
 // querySelectorAll: Cadena de texto que contiene un selector CSS válido, como un ID, clase, nombre de etiqueta, o cualquier combinador CSS.
 // En este caso seleccionas todos los elementos de la clase "pieza" 
 
-        pieza.setAttribute("draggable", "true");
-        });
+
     });
 
     let x = 1;
@@ -168,8 +182,8 @@ let numeroMovimiento =1;
             
         });
         });
-    });
 
-    document.addEventListener("DOMContentLoaded", () => {
+
         document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
     });
+
