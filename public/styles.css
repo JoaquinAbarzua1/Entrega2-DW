@@ -5,47 +5,55 @@
   height: 50%;
   left: 3.5em;
 }
+
 /* Formulario */
 .login-form {
-  background: rgba(255, 255, 255, 0.856);
+  background: rgb(255 255 255 / 85.6%);
   padding: 3rem;
   border-radius: 15%;
-  box-shadow: 0 0.5em 0.7em rgb(0, 0, 0);
+  box-shadow: 0 0.5em 0.7em rgb(0 0 0);
 }
+
 .about-section{ /* cuadro blanco de inicio de sesion (login) */
   position: relative;
   font-size: large;
-  top: 0rem;
+  top: 0;
   left: 23rem;
 }
+
 .features-list{
 position: absolute;
   font-size: large;
   top: 1rem;
   left: 23rem;
 }
+
 .figura-2 { /* marco superior (header) */
   background-color: #485e6d;
-  color: rgb(255, 255, 255);
+  color: rgb(255 255 255);
   padding: 2em 0;
   width: 100%;
   text-align: center;
 }
+
 .header-content { /* contenido 1 de (figura 2) */
   max-width: 800px;
   text-align: center;
   width: 100%;
 }
+
 .tagline { /* contenido 2 de figura 2 */
   font-family: 'Times New Roman', Times, serif;
   margin-top: 0.7em;
 }
+
 .body-1{ 
 background-image: url("../public/img/fondo\ 1real.jpg"); /* imagen toa fea xd */
 background-size: cover;
 background-position: center;
 background-attachment: fixed;
 }
+
 .contenido-principal {
   display: flex;
   justify-content: space-between;
@@ -53,6 +61,7 @@ background-attachment: fixed;
   margin: 3em auto;
   gap: 2em;
 }
+
 .form-group {
   margin-bottom: 2em;
 }
@@ -70,16 +79,17 @@ background-attachment: fixed;
   bottom: 0%;
   height: 5%;
   width: 100%;
-  color: rgb(255, 255, 255);
+  color: rgb(255 255 255);
   text-align: center;
   padding: 1em 0;
   margin-top: 2em;
 }
 
 .footer-nav {
+  margin: auto;
   margin-bottom: 2em;
   font-size: large;
-  margin: auto;
+ 
 }
 
 .footer-nav a {
@@ -88,36 +98,39 @@ background-attachment: fixed;
 }
 
 .register-form{
-  background-color: rgba(255, 255, 255, 0.856);
+  background-color: rgb(255 255 255 / 85.6%);
   width: 20%;
   position: absolute;
   padding: 2em;
   bottom:10%;
   border-radius: 20px;
-  box-shadow: 0px 5px 15px black;
+  box-shadow: 0 5px 15px black;
 
 }
+
 .site-header{
   position: relative;
-  background: #ffffff;
+  background: #fff;
   font-size: large;
   width: 20%;
   padding: 1em;
   height: 16%;
   left: 0%;
   border-radius: 20px;
-  box-shadow: 0px 5px 15px black;
+  box-shadow: 0 5px 15px black;
 }
+
 .register-benefits{
-  background: rgba(198, 252, 225);
+  background: rgb(198 252 225);
   padding: 1em;
   width: 58%;
   position: absolute;
   border-radius: 15%;
   top: 1%;
   left: 24%;
-  box-shadow: 0 0.5em 1 black;
+  box-shadow: 0 0.5em 1em black;
 }
+
 .main-nav{
   background-color: #181818;
   height: 15%;
@@ -127,22 +140,26 @@ background-attachment: fixed;
   bottom:80%;
   width: 10%;
   border-radius: 20%;
-  box-shadow: 0px 5px 15px black;
+  box-shadow: 0 5px 15px black;
 }
+
 .main-nav a:hover,
 .main-nav a.active {
   position: absolute;
   background-color: #8ec0e280;
   border-radius: 2em;
 }
+
 .footer-links{
  font-size:large;
   position: absolute;
   bottom: 0%;
 }
+
 .body-perfil{
-  background-color: rgb(206, 182, 182);
+  background-color: rgb(206 182 182);
 }
+
 .profile-details{
   background-color: #6a8597;
   position: absolute;
@@ -151,9 +168,10 @@ background-attachment: fixed;
   height: 64%;
   border-radius: 1em;
   padding: 1em;
-  box-shadow:0 0.7em 1em rgba(0, 0, 0, 0.5);
+  box-shadow:0 0.7em 1em rgb(0 0 0 / 50%);
 
 }
+
 .password-change{
   background-color: #6978a3;
   width: 20%;
@@ -162,9 +180,10 @@ background-attachment: fixed;
   padding: 1em;
   top: 1%;
   left: 24%;
-  box-shadow: 0 0.7em 1em rgba(0, 0, 0, 0.349);
+  box-shadow: 0 0.7em 1em rgb(0 0 0 / 34.9%);
 
 }
+
 .team-member{
   background: #afc4b2;
   width:15em;
@@ -173,12 +192,14 @@ background-attachment: fixed;
   font-size: medium;
   box-shadow: 0 0.5em 1em black;
 }
+
 .avatar-section{
   width: 20%;
   padding: 0.5em;
 }
+
 .dashboard{
-  background: rgb(237, 247, 105);
+  background: rgb(237 247 105);
   position:relative;
   bottom:-1rem;
   width: 25rem;
@@ -187,6 +208,7 @@ background-attachment: fixed;
   padding: 0.5rem;
   box-shadow: 0 0.7rem 1rem black;
 }
+
 .main-navprincipal{
   background-color: #9dffb2d7;
   position:absolute;
@@ -195,10 +217,11 @@ background-attachment: fixed;
   width: 25rem;
   right: -35em;
   border-radius: 2em;
-  box-shadow: 0 0.7em 1em #000000;
+  box-shadow: 0 0.7em 1em #000;
   
 
 }
+
 .stats-section{
   background-color: #beb6c7;
   width: 15em;
@@ -207,32 +230,60 @@ background-attachment: fixed;
   border-radius: 1em;
   padding: 0.5em;
 }
+
 /* Estilos del tablero */
 .tablero-container {
   margin: 0 auto;
-  padding: 0em;
+  padding: 0;
 }
 
 .tablero {
   display: grid;
   grid-template-columns: repeat(8, 60px);
   grid-template-rows: repeat(8, 60px);
-  border: 2px solid #000000;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  border: 2px solid #000;
+  box-shadow: 0 5px 15px rgb(0 0 0 / 20%);
   width: calc(60px * 8);
   height: calc(60px * 8);
   margin: 0% auto;
   
 }
+
 .pieza{ /* PIEZAS DEL AJEDREZ */
-  color: #000000;
+  color: #000;
   margin-left: 10%;
 }
 
 .blanco {
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .negro {
   background-color: #977aff;
+}
+
+#turno-indicador {
+  font-weight: bold;
+  padding: 8px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+#jugador-actual {
+  color: #2c7be5;
+}
+
+.movimientos {
+  margin-top: 20px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 5px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.movimiento {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+  font-family: monospace;
 }

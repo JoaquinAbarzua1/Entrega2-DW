@@ -251,7 +251,7 @@
       </div>
 
       <div class="controles-partida">
-        <p class="turno-indicador">Turno: </p>
+        <p id="turno-indicador">Turno: <span id="jugador-actual">Blancas</span> </p>
         <button id="btnRendirse" class="boton-partida">Rendirse</button>
         <button id="btnEmpatar"class="boton-partida">Empatar</button>
         <button id="btnNuevaPartida"class="boton-partida">Nueva Partida</button>
@@ -259,10 +259,7 @@
 
       <div class="movimientos">
         <h3>Movimientos</h3>
-        <ol>
-          <li>e4 e5</li>
-          <li>Cf3 Cc6</li>
-        </ol>
+        <div id="lista-movimientos"></div>
       </div>
 
       <div class="invitar-jugador">
@@ -279,304 +276,17 @@
       </nav>
     </footer> 
 
-        {{! FUNCIONES DE MOVIMIENTO}}
+        {{! ---------------------------------------------FUNCIONES DE MOVIMIENTO----------------------------------------------------------------------}}
 
-    <script>
-        function movimientosCaballo(x, y) {
-    const movimientos = [
-      [2, 1], [1, 2],
-      [-1, 2], [-2, 1],
-      [-2, -1], [-1, -2],
-      [1, -2], [2, -1]
-    ];
-  
-    const movimientosValidos = [];
-  
-    for (const [dx, dy] of movimientos) {
-      const nx = x + dx;
-      const ny = y + dy;
-  
-      // Verificar si está dentro del tablero
-      if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8) {
-        movimientosValidos.push([nx, ny]);
-      }
-    }
-  
-    return movimientosValidos;
-}
-function movimientosAlfil(x, y) {
-    const movimientos = [];
-  
-    for (let i = 1; i < 8; i++) {
-      if (x + i < 8 && y + i < 8) movimientos.push([x + i, y + i]);
-      if (x - i >= 0 && y + i < 8) movimientos.push([x - i, y + i]);
-      if (x + i < 8 && y - i >= 0) movimientos.push([x + i, y - i]);
-      if (x - i >= 0 && y - i >= 0) movimientos.push([x - i, y - i]);
-    }
-  
-    return movimientos;
-}
+    <script = src="/js/Movimientos.js"></script>
 
-function movimientosTorre(x, y) {
-    const movimientos = [];
-  
-    for (let i = 0; i < 8; i++) {
-      if (i !== x) movimientos.push([i, y]); // Horizontal
-      if (i !== y) movimientos.push([x, i]); // Vertical
-    }
-  
-    return movimientos;
-  }
-  
+ {{! --------------------------------------------- FUNCIONES PARA DRAG & DROP.......---------------------------------------------------------------------}}
 
-function movimientosReina(x, y) {
-    return [...movimientosTorre(x, y), ...movimientosAlfil(x, y)];
-}
+    <script src ="/js/Drag&Drop.js"></script>
 
-function movimientosRey(x, y) {
-    const movimientos = [];
-  
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dy = -1; dy <= 1; dy++) {
-        if (dx === 0 && dy === 0) continue;
-        const nx = x + dx, ny = y + dy;
-        if (nx >= 0 && ny >= 0 && nx < 8 && ny < 8) {
-          movimientos.push([nx, ny]);
-        }
-      }
-    }
-  
-    return movimientos;
-}
+{{! ------------------------------------------------------------FUNCIONES PARA EMPATAR, RENDIRSE Y CREAR NUEVA PARTIDA---------------------------------------------------------}}
 
-function movimientosPeon(x, y, color = 'blanca') {
-    const dir = color === 'blanca' ? -1 : 1;
-    const inicioFila = color === 'blanca' ? 6 : 1;
-    const movimientos = [];
-  
-    const ny = y + dir;
-    if (ny >= 0 && ny < 8) {
-      movimientos.push([x, ny]); // Movimiento normal
-      if (y === inicioFila && ny + dir >= 0 && ny + dir < 8) {
-        movimientos.push([x, ny + dir]); // Doble avance
-      }
-    }
-  
-    // Capturas diagonales (no consideramos piezas enemigas por ahora)
-    if (x > 0 && ny >= 0 && ny < 8) movimientos.push([x - 1, ny]);
-    if (x < 7 && ny >= 0 && ny < 8) movimientos.push([x + 1, ny]);
-  
-    return movimientos;
-}
-    </script>
-
- {{! FUNCIONES PARA DRAG & DROP.......}}
-
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.pieza').forEach(pieza => { 
-// querySelectorAll: Cadena de texto que contiene un selector CSS válido, como un ID, clase, nombre de etiqueta, o cualquier combinador CSS.
-// En este caso seleccionas todos los elementos de la clase "pieza" 
-
-        pieza.setAttribute('draggable', 'true');
-        });
-    });
-
-    let x = 1;
-    let pos = 0;
-    let y = ["a", "b", "c", "d", "e", "f", "g"];
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.cuadro').forEach(pieza => {
-            cuadro.classList.add(y[pos]+x);
-            if(x <= 8){
-                x++;
-            }
-            else{
-                pos++;
-            }
-        });
-    });
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        var tablero = document.querySelector('.tablero');
-
-        for(let i = 0; i<8; i++){
-            for(let j = 0; j<8; j++){
-            for(let i = 0; i<8; i++){
-            
-        }
-            }
-        }
-    });
-
-        document.addEventListener("DOMContentLoaded", function () {
-        let piezaArrastrada = null;
-        let posInicial = null;
-
-        // Cuando empieza a arrastrar una pieza
-        document.querySelectorAll(".pieza").forEach(pieza => {
-        pieza.addEventListener("dragstart", (e) => {
-            piezaArrastrada = pieza;
-            posInicial = pieza.parentElement.className.match(/([a-h][1-8])/)[0]; // Ej: "a8"
-            setTimeout(() => pieza.style.display = "none", 0);
-        });
-
-        pieza.addEventListener("dragend", (e) => {
-            pieza.style.display = "";
-        });
-        });
-
-// Convertir posición "a8" a coordenadas [x, y] (ej: "a8" → [0, 0])
-    function posicionACoordenadas(pos) {
-        const x = pos.charCodeAt(0) - 'a'.charCodeAt(0); // a=0, b=1, ..., h=7
-        const y = 8 - parseInt(pos[1]); // 8=0, 7=1, ..., 1=7
-        return [x, y];
-    }
-        // Habilita cada casilla como zona de "soltar"
-        document.querySelectorAll(".tablero > div").forEach(casilla => {
-        casilla.addEventListener("dragover", (e) => {
-            e.preventDefault(); // Necesario para permitir drop
-        });
-
-        casilla.addEventListener("drop", (e) => {
-            e.preventDefault();
-            if (!piezaArrastrada) return;
-
-            const posDestino = casilla.className.match(/([a-h][1-8])/)[0]; // Ej: "b6"
-            const [xInicial, yInicial] = posicionACoordenadas(posInicial);
-            const [xDestino, yDestino] = posicionACoordenadas(posDestino);
-
-            // Obtener tipo y color de la pieza (desde data-info o clases)
-            const tipoPieza = piezaArrastrada.getAttribute('data-info') // ocupas el data-info
-                ? JSON.parse(piezaArrastrada.getAttribute('data-info')).tipo 
-                : piezaArrastrada.textContent.trim().toLowerCase(); // Por si no hay data-info
-            const colorPieza = piezaArrastrada.classList.contains('negra') ? 'negra' : 'blanca';
-
-            // Verificar movimiento válido
-            let movimientosValidos = [];
-            switch (tipoPieza) {
-                case 'caballo':
-                    movimientosValidos = movimientosCaballo(xInicial, yInicial);
-                    break;
-                case 'alfil':
-                    movimientosValidos = movimientosAlfil(xInicial, yInicial);
-                    break;
-                case 'torre':
-                    movimientosValidos = movimientosTorre(xInicial, yInicial);
-                    break;
-                case 'reina':
-                    movimientosValidos = movimientosReina(xInicial, yInicial);
-                    break;
-                case 'rey':
-                    movimientosValidos = movimientosRey(xInicial, yInicial);
-                    break;
-                case 'peon':
-                    movimientosValidos = movimientosPeon(xInicial, yInicial, colorPieza);
-                    break;
-            }
-
-            // Verificar si el destino está en movimientos válidos
-            const movimientoPermitido = movimientosValidos.some(([x, y]) => 
-                x === xDestino && y === yDestino
-            );
-
-            // Verificar si hay una pieza del mismo color en el destino
-            const piezaDestino = casilla.querySelector('.pieza');
-            const mismoColor = piezaDestino && piezaDestino.classList.contains(colorPieza);
-
-            // Evita que se agregue más de una pieza en la misma casilla
-            if(movimientoPermitido && !mismoColor){
-            casilla.innerHTML = "";
-            casilla.appendChild(piezaArrastrada);
-
-            }
-
-            piezaArrastrada = null;
-            posInicial = null;
-            
-        });
-        });
-    });
-    </script>
-
-
-{{! FUNCIONES PARA EMPATAR, RENDIRSE Y CREAR NUEVA PARTIDA}}
-
-    <script>
-
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // PARA CREAR NUEVA PARTIDA..
-
-            document.getElementById('btnNuevaPartida').addEventListener('click', async() => {
-                if (confirm('Estas seguro de crear una nueva partida?')){
-                    try{
-                        const respuesta = await fetch('/nueva-partida', { 
-                            // aca se hizo una peticion HTTP mediante fetch(), 
-                        // /nueva-partida es la URL a la que se envia la peticion, mediante una ruta del servidor express
-                            method: 'POST', headers: {
-                                // method: POST especifica que estoy haciendo una peticion POST (para crear/modificar datos), Alternativas serían GET (para leer), PUT/PATCH (para actualizar), DELETE
-                                'Content-Type': 'aplication/json'
-
-                                // Esto de arriba le dice al servidor que estoy enviando datos en formato JSON ya que el servidor express saber como interpretar los datos recibidos
-                            }
-                        });
-
-                        if (respuesta.ok){
-                            location.reload(); //recargar la pagina 
-                        }else{
-                            alert('No se pudo crear nueva partida');
-                        }
-                    } catch (error){
-                        console.error('Error:', error);
-                    }
-                }
-            });
-
-            //RENDIRSE..
-
-            document.getElementById('btnRendirse').addEventListener('click', async()=>{
-                if(confirm('Estas seguro de rendirte?')){
-                    try{
-                        const respuesta = await fetch('/rendirse', {
-                            method: 'POST'
-                        });
-
-                        if(respuesta.ok){
-                            const resultado = await respuesta.json();
-                            alert('Has abandonado la partida de una forma muy gay. Resultado: ${resultado.resultado}'); // OJO AQUI
-                            location.reload();
-                        }
-                    } catch(error){
-                        console.error('Error:',error);
-                    }
-                }
-            });
-
-            //EMPATAR..
-
-            document.getElementById('btnEmpatar').addEventListener('click', async() =>{
-                if(confirm('Quieres un stalemate wekito?')){
-                    try{
-                        const respuesta = await fetch('/empatar', {
-                            method: 'POST'
-                        });
-
-                        if(respuesta.ok){
-                            const resultado = await respuesta.json();
-                            alert('Has ofrecido tablas. Estado: ${resultado.status}') // OJO AQUI
-                            // Actualizar UI segun sea necesario
-                        }
-                    }catch(error)
-                    {
-                        console.error('Error:',error);
-                    }
-                }
-            });
-        });
-
-    </script>
-
+    <script src="/js/BotonesPartida.js"></script>
     
 </body>
     </html>

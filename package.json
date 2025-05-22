@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "lint:js": "eslint public/js/",
+    "lint:css": "stylelint \"public/**/*.css\"",
+    "lint:html": "htmlhint views/",
+    "lint": "npm run lint:js && npm run lint:css && npm run lint:html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,5 +18,11 @@
     "express": "^5.1.0",
     "express-handlebars": "^8.0.1",
     "mongoose": "^8.14.2"
+  },
+  "devDependencies": {
+    "eslint": "^9.27.0",
+    "htmlhint": "^1.1.4",
+    "stylelint": "^16.19.1",
+    "stylelint-config-standard": "^38.0.0"
   }
 }
