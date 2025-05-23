@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         if(respuesta.ok){
                             const resultado = await respuesta.json();
-                            alert(`Has abandonado la partida de una forma muy gay. Resultado: ${resultado.resultado}`); // OJO AQUI
+                            alert(`Has abandonado la partida. Resultado: ${resultado.resultado}`); // OJO AQUI
                             location.reload();
                         }
                     } catch(error){
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
             //EMPATAR..
 
             document.getElementById("btnEmpatar").addEventListener("click", async() =>{
-                if(confirm("Quieres un stalemate wekito?")){
+                if(confirm("Quieres tablas?")){
                     try{
                         const respuesta = await fetch("/empatar", {
                             method: "POST"
