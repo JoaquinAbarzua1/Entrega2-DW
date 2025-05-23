@@ -20,15 +20,19 @@ background-attachment: fixed;
 
     <main class="contenido-principal">
       <section class="figura-1">
-        <form class="login-form" action="principal" method="get">
+        <form class="login-form" id="loginform">
+
           <h2>Iniciar Sesión</h2>
+          {{#if error}}
+            <div class="alert-error">{{error}}</div>  <!-- Mensaje de error -->
+          {{/if}}
 
           <div class="form-group">
-            <label for="email">Correo electrónico</label>
+            <label for="username">Correo electrónico</label>
             <input
               type="email"
-              id="email"
-              name="email"
+              id="username"
+              name="username"
               placeholder="holachao@ejemplo.com"
               required
             />
@@ -66,6 +70,25 @@ background-attachment: fixed;
             <li>Mejorar tu ranking</li>
           </ul>
         </form>
+
+       <script>
+  document.querySelector("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const user = JSON.parse(localStorage.getItem(email));
+    if (user && user.password === password) {
+      localStorage.setItem("usuarioAutenticado", "true");
+      localStorage.setItem("usuarioActual", email);
+      window.location.href = "/principal";
+    } else {
+      alert("Credenciales incorrectas");
+    }
+  });
+</script>
+
       </section>
     </main>
 

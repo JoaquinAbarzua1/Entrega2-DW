@@ -6,6 +6,8 @@ const app = express()
 const port = 80
 const path = require('path');
 
+const fs = require('fs');
+const DB_FILE = 'usuarios.json';
 
 app.engine('handlebars', engine({
   defaultLayout: 'main', partialsDir: path.join(__dirname, 'views', 'partials'), 
@@ -17,6 +19,7 @@ app.engine('handlebars', engine({
 app.set('view engine', 'handlebars');
 app.use(express.static('public'));
 app.set('views', './views')
+
 
 
 //Activa body-parser para leer formularios
@@ -54,27 +57,21 @@ mongoose.connect('mongodb+srv://joaquinabarzua:<contraseña>@cluster0.avkv65o.mo
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
 
+//Crea base de datos local
+let usuarios = [];
+try {
+  usuarios = JSON.parse(fs.readFileSync(DB_FILE));
+} catch (err) {
+  usuarios = [{username: "admin@admin", password: "admin"}];
+  fs.writeFileSync(DB_FILE, JSON.stringify(usuarios));
+}
 
-//-------------------------------------------------------------------------------------------------------------------------------------------
-
-//Crea base de datos temporal
-const usuarios = []
 
 
 //-------------------------Rutas-------------------------------------------------------------------------------------------
-// Ruta principal que renderiza index.handlebars
-//comentado para evitar confusiones
-/*app.get('/', (req, res) => {
-  res.render('index', {
-    titulo: 'Hello World!',
-    mensaje: 'Bienvenido a mi app usando Handlebars y no sé usar Git'
-  })
-})*/
 
-// Ruta adicional sin plantilla
-app.get('/despedirse', (req, res) => {
-  res.send('Bye cruel World!')
-})
+
+
 
 //Ruta GET para mostrar formulario de registro
 app.get('/registro', (req, res) => {
@@ -83,15 +80,18 @@ app.get('/registro', (req, res) => {
 
 //Ruta POST para registrar un nuevo usuario
 
-app.post('/registrarse', (req, res) => {
-  const { username, password } = req.body
-  const existe = usuarios.find(u => u.username === username)
+app.post('/registro', (req, res) => {
+  const { username, password } = req.body;
+  const existe = usuarios.find(u => u.username === username);
 
-  if (existe) {return res.send('Usuario ya existe. <a href="/registro">Volver</a>')}
+  if (existe) {
+    return res.send('Usuario ya existe. <a href="/registro">Volver</a>');
+  }
 
-  usuarios.push({ username, password })
-  res.redirect('/login')
-})
+  usuarios.push({ username, password });
+  fs.writeFileSync(DB_FILE, JSON.stringify(usuarios)); // Guarda en archivo
+  res.redirect('/login');
+});
 
 
 //post que usa mongoose
@@ -112,14 +112,8 @@ app.get('/login', (req, res) => {
 //Ruta POST para autenticar usuario
 
 app.post('/login', (req, res) => {
-  const { username, password } = req.body
-  const usuario = usuarios.find(u => u.username === username && u.password === password)
-
-  if (!usuario) {return res.send('Credenciales inválidas. <a href="/login">Intentar de nuevo</a>')}
-  res.render('welcome', { username })
-})
-
-
+  res.send('El login debe manejarse en el cliente usando localStorage.');
+});
 //post que usa mongoose
 /*
 app.post('/login', async (req, res) => {
@@ -142,12 +136,14 @@ app.post('/login', async (req, res) => {
 
 //Ruta raíz
 //app.get('/', estaLoggeado ,(req, res) => { //hacer funcion estaLogeado
-app.get('/', (req, res) =>
-  res.render('principal')
-)
-app.get('/principal', (req, res) =>
-  res.render('principal')
-)
+app.get('/principal',  (req, res) => {
+  res.render('principal', { 
+     
+  });
+});
+app.get('/',  (req, res) => {
+  res.render('principal', {  });
+});
 
 app.get('/perfil', (req, res) =>
   res.render('perfil')
@@ -165,10 +161,13 @@ app.get('/historia', (req, res) => {
 });
 
 //Ruta GET para mostrar formulario de registro
-app.get('/partida', (req, res) => {
+app.get('/partida',  (req, res) => {
   const tablero = crearTablero();
-  res.render('partida', { tablero });
-})
+  res.render('partida', { 
+    tablero,
+     // Pasa el nombre de usuario
+  });
+});
 
 
 // RUTA PARA NUEVA PARTIDA 
@@ -199,6 +198,7 @@ res.json({
 //-------------Funciones------------------------------------------------------------------------------------------------------------
 
 //hacer funcion para verificar conexion (que esté logeado), por ahora cada vez que abra la pagina, mandará a principal
+
 //true res.render()
 //false res.redirect('login)
 
@@ -231,94 +231,6 @@ function crearTablero() {
     }
   
     return tablero;
-}
-// funciones de movimientos
-function movimientosCaballo(x, y) {
-    const movimientos = [
-      [2, 1], [1, 2],
-      [-1, 2], [-2, 1],
-      [-2, -1], [-1, -2],
-      [1, -2], [2, -1]
-    ];
-  
-    const movimientosValidos = [];
-  
-    for (const [dx, dy] of movimientos) {
-      const nx = x + dx;
-      const ny = y + dy;
-  
-      // Verificar si está dentro del tablero
-      if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8) {
-        movimientosValidos.push([nx, ny]);
-      }
-    }
-  
-    return movimientosValidos;
-}
-
-function movimientosAlfil(x, y) {
-    const movimientos = [];
-  
-    for (let i = 1; i < 8; i++) {
-      if (x + i < 8 && y + i < 8) movimientos.push([x + i, y + i]);
-      if (x - i >= 0 && y + i < 8) movimientos.push([x - i, y + i]);
-      if (x + i < 8 && y - i >= 0) movimientos.push([x + i, y - i]);
-      if (x - i >= 0 && y - i >= 0) movimientos.push([x - i, y - i]);
-    }
-  
-    return movimientos;
-}
-
-function movimientosTorre(x, y) {
-    const movimientos = [];
-  
-    for (let i = 0; i < 8; i++) {
-      if (i !== x) movimientos.push([i, y]); // Horizontal
-      if (i !== y) movimientos.push([x, i]); // Vertical
-    }
-  
-    return movimientos;
-  }
-  
-
-function movimientosReina(x, y) {
-    return [...movimientosTorre(x, y), ...movimientosAlfil(x, y)];
-}
-
-function movimientosRey(x, y) {
-    const movimientos = [];
-  
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dy = -1; dy <= 1; dy++) {
-        if (dx === 0 && dy === 0) continue;
-        const nx = x + dx, ny = y + dy;
-        if (nx >= 0 && ny >= 0 && nx < 8 && ny < 8) {
-          movimientos.push([nx, ny]);
-        }
-      }
-    }
-  
-    return movimientos;
-}
-
-function movimientosPeon(x, y, color = 'blanca') {
-    const dir = color === 'blanca' ? -1 : 1;
-    const inicioFila = color === 'blanca' ? 6 : 1;
-    const movimientos = [];
-  
-    const ny = y + dir;
-    if (ny >= 0 && ny < 8) {
-      movimientos.push([x, ny]); // Movimiento normal
-      if (y === inicioFila && ny + dir >= 0 && ny + dir < 8) {
-        movimientos.push([x, ny + dir]); // Doble avance
-      }
-    }
-  
-    // Capturas diagonales (no consideramos piezas enemigas por ahora)
-    if (x > 0 && ny >= 0 && ny < 8) movimientos.push([x - 1, ny]);
-    if (x < 7 && ny >= 0 && ny < 8) movimientos.push([x + 1, ny]);
-  
-    return movimientos;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------
