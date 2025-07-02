@@ -9,6 +9,8 @@
       `Bienvenido, ${usuarioActual.username}`;
   }
 </script> 
+
+
 </body>
     <header>
       <h1>Bienvenido usuario</h1>
@@ -53,9 +55,7 @@ background-attachment: fixed
           >
         </li>
         <li>
-          <a href="login" class="logout" style="color: black"
-            >Cerrar sesión</a
-          >
+          <a href="#" onclick="cerrarSesion()" style="color: black">Cerrar sesión</a>
         </li>
       </ul>
     </nav>
@@ -102,3 +102,18 @@ background-attachment: fixed
         </table>
       </section>
     </main>
+<body>
+  <script>
+  //Cerrar sesión
+  function cerrarSesion() {
+
+    // Borra bandera de autenticación y datos del usuario
+    localStorage.removeItem('usuarioAutenticado');
+    localStorage.removeItem('usuarioActual');
+
+    // Redirige a la página de login
+    window.location.href = '/login';
+  }
+
+</script>
+</body>

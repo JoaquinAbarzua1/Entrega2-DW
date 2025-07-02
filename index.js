@@ -1,13 +1,12 @@
 const express = require('express') 
 const { engine } = require('express-handlebars')
 const bodyParser = require('body-parser')
+const path = require('path');
+const fs = require('fs');
 
 const app = express()
-const port = 80
-const path = require('path');
-
-const fs = require('fs');
-const DB_FILE = 'usuarios.json';
+const PORT = process.env.PORT || 3000;
+const DB_FILE = path.join(__dirname, 'usuarios.json');
 
 app.engine('handlebars', engine({
   defaultLayout: 'main', partialsDir: path.join(__dirname, 'views', 'partials'), 
@@ -17,8 +16,9 @@ app.engine('handlebars', engine({
   }
 }));
 app.set('view engine', 'handlebars');
-app.use(express.static('public'));
-app.set('views', './views')
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 
@@ -136,13 +136,13 @@ app.post('/login', async (req, res) => {
 
 //Ruta raíz
 //app.get('/', estaLoggeado ,(req, res) => { //hacer funcion estaLogeado
-app.get('/principal',  (req, res) => {
+app.get('/',  (req, res) => {
   res.render('principal', { 
      
   });
 });
-app.get('/',  (req, res) => {
-  res.render('principal', {  });
+app.get('/principal',  (req, res) => {
+  res.redirect('/');
 });
 
 app.get('/perfil', (req, res) =>
@@ -236,6 +236,6 @@ function crearTablero() {
 //---------------------------------------------------------------------------------------------------------------------------------------
 //Iniciar el servidor
 
-app.listen(port, () => {
-  console.log(`App escuchando en http://localhost:${port}`)
+app.listen(PORT, () => {
+  console.log(`App escuchando en http://localhost:${PORT}`)
 })

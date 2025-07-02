@@ -1,4 +1,16 @@
+<body>
+  <script>
+  // Verificar si hay usuario logueado
+  const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+  if (!usuarioActual) {
+    window.location.href = '/login';
+  } else {
+    document.getElementById('bienvenida').textContent = 
+      `Bienvenido, ${usuarioActual.username}`;
+  }
+</script> 
 
+    
     <header class="site-header">
       <h1>Mi Perfil</h1>
       <p>Personaliza tu experiencia de ajedrez</p>
@@ -31,9 +43,7 @@ background-attachment: fixed;
           >
         </li>
         <li style="color: #ffffffa4">
-          <a href="login" class="logout" style="color: #dae7d0"
-            >Cerrar sesión</a
-          >
+          <a href="#" onclick="cerrarSesion()" style="color: #dae7d0">Cerrar sesión</a>
         </li>
       </ul>
     </nav>
@@ -112,3 +122,19 @@ Dedicado a jugar lol y con un gusto por los rompecabezas</textarea
           >Desarrollado por: Joaquín Abarzúa, Pedro Rojas</a
         >
       </div>
+
+<script>
+  //Cerrar sesión
+  function cerrarSesion() {
+
+    // Borra bandera de autenticación y datos del usuario
+    localStorage.removeItem('usuarioAutenticado');
+    localStorage.removeItem('usuarioActual');
+
+    // Redirige a la página de login
+    window.location.href = '/login';
+    
+  }
+</script>
+
+</body>
