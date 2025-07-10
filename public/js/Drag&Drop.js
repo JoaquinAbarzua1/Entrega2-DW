@@ -11,7 +11,7 @@ const jugadores = {
     negras: "Jugador 2"
 };
 
-
+// Funciones..
 
 function obtenerEstadoTablero() {
     const celdas = document.querySelectorAll(".tablero > div");
