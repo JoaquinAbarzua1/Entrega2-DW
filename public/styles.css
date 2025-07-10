@@ -237,7 +237,7 @@ background-attachment: fixed;
   padding: 0;
 }
 
-.tablero {
+.tablero { /* ocupado para document.QuerySelectorAll */
   display: grid;
   grid-template-columns: repeat(8, 60px);
   grid-template-rows: repeat(8, 60px);
