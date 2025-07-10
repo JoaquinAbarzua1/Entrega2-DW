@@ -20,7 +20,7 @@ background-attachment: fixed;
 
     <main class="contenido-principal">
       <section class="figura-1">
-        <form class="login-form" id="loginform">
+        <form class="login-form" id="loginform" method="post" action="/login">
 
           <h2>Iniciar Sesión</h2>
           {{#if error}}
@@ -72,6 +72,7 @@ background-attachment: fixed;
         </form>
 
        <script>
+        /*
   document.querySelector("form").addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -87,6 +88,7 @@ background-attachment: fixed;
       alert("Credenciales incorrectas");
     }
   });
+  */
 </script>
 
       </section>

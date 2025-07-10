@@ -31,17 +31,21 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 //Base de datos
 
-/* QUEDA COMENTADO PORQUE SE SUPONE QUE AÚN NO HAY QUE USAR BASE DE DATOS
+// QUEDA COMENTADO PORQUE SE SUPONE QUE AÚN NO HAY QUE USAR BASE DE DATOS
 const mongoose = require('mongoose')
 
 const UsuarioSchema = new mongoose.Schema({
   username: String,
+  email: String,
+  nombre: String,
+  apellido: String,
+  birthdate: String,
   password: String
 })
 
 const Usuario = mongoose.model('Usuario', UsuarioSchema)
 
-mongoose.connect('mongodb+srv://joaquinabarzua:<contraseña>@cluster0.avkv65o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://joaquinabarzua:'+process.env.PASS+'@cluster0.avkv65o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -52,11 +56,11 @@ mongoose.connect('mongodb+srv://joaquinabarzua:<contraseña>@cluster0.avkv65o.mo
   console.error('Error conectando a MongoDB', err)
 })
 
-*/
+
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-
+/*
 //Crea base de datos local
 let usuarios = [];
 try {
@@ -66,7 +70,7 @@ try {
   fs.writeFileSync(DB_FILE, JSON.stringify(usuarios));
 }
 
-
+*/
 
 //-------------------------Rutas-------------------------------------------------------------------------------------------
 
@@ -78,8 +82,8 @@ app.get('/registro', (req, res) => {
   res.render('registro')
 })
 
-//Ruta POST para registrar un nuevo usuario
-
+//Ruta POST para registrar un nuevo usuario Local Storage
+/*
 app.post('/registro', (req, res) => {
   const { username, password } = req.body;
   const existe = usuarios.find(u => u.username === username);
@@ -92,17 +96,18 @@ app.post('/registro', (req, res) => {
   fs.writeFileSync(DB_FILE, JSON.stringify(usuarios)); // Guarda en archivo
   res.redirect('/login');
 });
-
+*/
 
 //post que usa mongoose
-/*
+
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body
-  const nuevoUsuario = new Usuario({ username, password })
+  const { username, email, nombre, apellido, birthdate, password } = req.body
+  const nuevoUsuario = new Usuario({ username, email, nombre, apellido, birthdate, password })
   await nuevoUsuario.save()
-  res.send('Usuario registrado con éxito')
+  //res.send('Usuario registrado con éxito')
+  res.redirect('/login')
 })
-*/
+
 
 //Ruta GET para mostrar formulario de login
 app.get('/login', (req, res) => {
@@ -110,12 +115,13 @@ app.get('/login', (req, res) => {
 })
 
 //Ruta POST para autenticar usuario
-
+/*
 app.post('/login', (req, res) => {
   res.send('El login debe manejarse en el cliente usando localStorage.');
 });
+*/
+
 //post que usa mongoose
-/*
 app.post('/login', async (req, res) => {
   const { username, password } = req.body
 
@@ -126,13 +132,13 @@ app.post('/login', async (req, res) => {
       return res.send('Credenciales inválidas. <a href="/login">Intentar de nuevo</a>')
     }
 
-    res.render('Profewelcome', { username })
+    res.redirect('/principal')
   } catch (err) {
     console.error('Error al buscar usuario:', err)
     res.send('Error interno del servidor')
   }
 })
-*/
+
 
 //Ruta raíz
 //app.get('/', estaLoggeado ,(req, res) => { //hacer funcion estaLogeado
@@ -199,9 +205,11 @@ res.json({
 
 //hacer funcion para verificar conexion (que esté logeado), por ahora cada vez que abra la pagina, mandará a principal
 
+function estaLogeado() {
+  let logged = false;
 //true res.render()
 //false res.redirect('login)
-
+}
 const letras = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const tablero = [];
 
