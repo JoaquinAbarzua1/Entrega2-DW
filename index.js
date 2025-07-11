@@ -1,8 +1,11 @@
-const express = require('express') 
-const { engine } = require('express-handlebars')
-const bodyParser = require('body-parser')
+const express = require('express');
+const { engine } = require('express-handlebars');
+const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
 const app = express()
 const PORT = process.env.PORT || 3000;
@@ -20,19 +23,24 @@ app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: 'mi_secreto',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {secure: false} // Cambiar a true si se usa HTTPS
+})); 
 
 
+app.use(bodyParser.urlencoded({ extended: true })); //Activa body-parser para leer formularios
 
-//Activa body-parser para leer formularios
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cookieParser());
 
 
-//----------------------------------------------------------------------------------------------------------------------------
+//-----------------------Mongoose-----------------------------------------------------------------------------------------------------
 
 //Base de datos
 
-// QUEDA COMENTADO PORQUE SE SUPONE QUE AÚN NO HAY QUE USAR BASE DE DATOS
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const UsuarioSchema = new mongoose.Schema({
   username: String,
@@ -41,9 +49,9 @@ const UsuarioSchema = new mongoose.Schema({
   apellido: String,
   birthdate: String,
   password: String
-})
+});
 
-const Usuario = mongoose.model('Usuario', UsuarioSchema)
+const Usuario = mongoose.model('Usuario', UsuarioSchema);
 
 mongoose.connect('mongodb+srv://joaquinabarzua:'+process.env.PASS+'@cluster0.avkv65o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
@@ -54,23 +62,22 @@ mongoose.connect('mongodb+srv://joaquinabarzua:'+process.env.PASS+'@cluster0.avk
 })
 .catch(err => {
   console.error('Error conectando a MongoDB', err)
-})
+});
 
+//Modelo de Partidas
 
+const PartidaSchema = new mongoose.Schema({
+  jugador1: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario", required: true }, 
+  jugador2: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
+  fechaInicio: {type: Date, default: Date.now },
+  resultado: {
+    type: String,
+    enum: ['jugador1', 'jugador2', 'empate', 'en_curso'],
+    default: 'en_curso'
+  }
+});
 
-//-----------------------------------------------------------------------------------------------------------------------------------------
-
-/*
-//Crea base de datos local
-let usuarios = [];
-try {
-  usuarios = JSON.parse(fs.readFileSync(DB_FILE));
-} catch (err) {
-  usuarios = [{username: "admin@admin", password: "admin"}];
-  fs.writeFileSync(DB_FILE, JSON.stringify(usuarios));
-}
-
-*/
+const Partida = mongoose.model('Partida', PartidaSchema);
 
 //-------------------------Rutas-------------------------------------------------------------------------------------------
 
@@ -80,7 +87,7 @@ try {
 //Ruta GET para mostrar formulario de registro
 app.get('/registro', (req, res) => {
   res.render('registro')
-})
+});
 
 //Ruta POST para registrar un nuevo usuario Local Storage
 /*
@@ -100,19 +107,20 @@ app.post('/registro', (req, res) => {
 
 //post que usa mongoose
 
-app.post('/register', async (req, res) => {
+app.post('/registro', async (req, res) => { // cambiar nombre a 'register' si hay problemas
   const { username, email, nombre, apellido, birthdate, password } = req.body
-  const nuevoUsuario = new Usuario({ username, email, nombre, apellido, birthdate, password })
+  const hash = await bcrypt.hash(password,10);
+  const nuevoUsuario = new Usuario({ username, email, nombre, apellido, birthdate, password: hash })
   await nuevoUsuario.save()
   //res.send('Usuario registrado con éxito')
   res.redirect('/login')
-})
+});
 
 
 //Ruta GET para mostrar formulario de login
 app.get('/login', (req, res) => {
   res.render('login')
-})
+});
 
 //Ruta POST para autenticar usuario
 /*
@@ -126,18 +134,23 @@ app.post('/login', async (req, res) => {
   const { username, password } = req.body
 
   try {
-    const usuario = await Usuario.findOne({ username, password })
-
-    if (!usuario) {
+    const usuario = await Usuario.findOne({ username })
+    if (!usuario || !(await bcrypt.compare(password, usuario.password))) {
       return res.send('Credenciales inválidas. <a href="/login">Intentar de nuevo</a>')
     }
-
+    req.session.userId = usuario._id // Guarda el ID del usuario en la sesión
     res.redirect('/principal')
   } catch (err) {
     console.error('Error al buscar usuario:', err)
     res.send('Error interno del servidor')
   }
-})
+});
+
+app.get('/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.redirect('/');
+  });
+});
 
 
 //Ruta raíz
@@ -153,13 +166,13 @@ app.get('/',  (req, res) => {
 
 app.get('/perfil', (req, res) =>
   res.render('perfil')
-)
+);
 //agregar resto de rutas
 
 //Ruta GET para mostrar desarrolladores
 app.get('/desarrolladores', (req, res) => {
   res.render('desarrolladores')
-})
+});
 
 //Ruta GET para mostrar formulario de registro
 app.get('/historia', (req, res) => {

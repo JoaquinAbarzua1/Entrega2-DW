@@ -15,7 +15,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrpyt": "^2.0.0",
+    "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
+    "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.1",
     "express-session": "^1.18.1",
