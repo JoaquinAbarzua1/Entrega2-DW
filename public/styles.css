@@ -246,12 +246,27 @@ background-attachment: fixed;
   width: calc(60px * 8);
   height: calc(60px * 8);
   margin: 0% auto;
+  user-select: none; /* No seleccionar las celdas */
   
 }
 
 .pieza{ /* PIEZAS DEL AJEDREZ */
   color: #000;
   margin-left: 10%;
+      user-select: none; /* Evita la selección de texto */
+    -webkit-user-drag: element; /* Para WebKit/Blink */
+}
+
+.pieza [draggable="true"] {
+    cursor: grab; /* Cambia el cursor al pasar sobre piezas */
+}
+
+.pieza:active {
+    cursor: grabbing; /* Cambia el cursor cuando se arrastra */
+}
+
+.arrastrando {
+  opacity: 0.5; /* Hace la pieza semi-transparente durante el arrastre */
 }
 
 .blanco {

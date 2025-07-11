@@ -79,10 +79,13 @@ function configurarEventosPiezas() {
             piezaArrastrada = pieza;
             posInicial = pieza.parentElement.className.match(/([a-h][1-8])/)[0];
             setTimeout(() => pieza.style.display = "none", 0);
+            e.dataTransfer.setDragImage(pieza, 0, 0); // Usa la pieza como imagen de arrastre
+    pieza.classList.add("arrastrando"); // Agrega una clase durante el arrastre
         });
 
         pieza.addEventListener("dragend", () => {
             pieza.style.display = "";
+            pieza.classList.remove("arrastrando"); // Remueve la clase al terminar
         });
     });
 }
