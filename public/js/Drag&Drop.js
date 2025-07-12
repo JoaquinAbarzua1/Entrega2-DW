@@ -135,52 +135,84 @@ function configurarEventosPiezas() {
         });
     });
 }
+function posicionACoordenadas(pos) {
+    const x = pos.charCodeAt(0) - "a".charCodeAt(0); 
+    const y = 8 - parseInt(pos[1]); 
+    return [x, y];
+}
+function configurarEventosCasillas() {
+  document.querySelectorAll(".tablero > div").forEach(casilla => {
+    casilla.addEventListener("dragover", (e) => {
+      e.preventDefault(); // Necesario para permitir drop
+    });
 
-document.addEventListener("DOMContentLoaded", function () {
-    
-//Restaura la partida
-    // const partidaGuardada = localStorage.getItem("partidaAjedrez");
-    if (partidaGuardada) {
-        const datos = JSON.parse(partidaGuardada);
-        registroMovimientos = datos.movimientos || [];
-        turnoActual = datos.turno || "blancas";
-        numeroMovimiento = datos.numeroMovimiento || 1;
+    casilla.addEventListener("drop", (e) => {
+      e.preventDefault();
+      if (!piezaArrastrada) return;
 
-        if (datos.piezas && Array.isArray(datos.piezas)) {
-            const celdas = document.querySelectorAll(".tablero > div");
-            celdas.forEach(celda => celda.innerHTML = "");
+      const posDestino = casilla.className.match(/([a-h][1-8])/)[0];
+      const [xInicial, yInicial] = posicionACoordenadas(posInicial);
+      const [xDestino, yDestino] = posicionACoordenadas(posDestino);
 
-            datos.piezas.forEach(pieza => {
-                const celda = document.querySelector(`.${pieza.pos}`);
-                if (celda) {
-                    const span = document.createElement("span");
-                    span.classList.add("pieza", pieza.color);
-                    span.style.fontSize = "2.5rem";
-                    span.setAttribute("draggable", "true");
-                    span.setAttribute("data-info", JSON.stringify({ tipo: pieza.tipo, color: pieza.color }));
+      // Obtener tipo y color de la pieza
+      const tipoPieza = JSON.parse(piezaArrastrada.getAttribute("data-info")).tipo;
+      const colorPieza = piezaArrastrada.classList.contains("negra") ? "negra" : "blanca";
 
-                    switch (pieza.tipo) {
-                        case "torre": span.innerHTML = pieza.color === "blanca" ? "&#9814;" : "&#9820;"; break;
-                        case "caballo": span.innerHTML = pieza.color === "blanca" ? "&#9816;" : "&#9822;"; break;
-                        case "alfil": span.innerHTML = pieza.color === "blanca" ? "&#9815;" : "&#9821;"; break;
-                        case "reina": span.innerHTML = pieza.color === "blanca" ? "&#9813;" : "&#9819;"; break;
-                        case "rey": span.innerHTML = pieza.color === "blanca" ? "&#9812;" : "&#9818;"; break;
-                        case "peon": span.innerHTML = pieza.color === "blanca" ? "&#9817;" : "&#9823;"; break;
-                    }
+      // Verificar si es un movimiento válido
+      let movimientosValidos = [];
+      switch (tipoPieza) {
+        case "caballo":
+          movimientosValidos = movimientosCaballo(xInicial, yInicial);
+          break;
+        case "torre":
+          movimientosValidos = movimientosTorre(xInicial, yInicial);
+          break;
+        case "alfil":
+          movimientosValidos = movimientosAlfil(xInicial, yInicial);
+          break;
+        case "reina":
+          movimientosValidos = movimientosReina(xInicial, yInicial);
+          break;
+        case "rey":
+          movimientosValidos = movimientosRey(xInicial, yInicial);
+          break;
+        case "peon":
+          movimientosValidos = movimientosPeon(xInicial, yInicial, colorPieza);
+          break;
+      }
 
-                    celda.appendChild(span);
-                }
-            });
-        }
+      // Verificar si la posición destino está en movimientos válidos
+      const destinoValido = movimientosValidos.some(([nx, ny]) => nx === xDestino && ny === yDestino);
+      if (!destinoValido) {
+        alert("Movimiento inválido");
+        return;
+      }
 
-            actualizarListaMovimientos();
-            document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
-        }
+      // Actualizar el tablero actual (mover la pieza)
+      tableroActual[yDestino][xDestino] = tableroActual[yInicial][xInicial];
+      tableroActual[yInicial][xInicial] = null;
 
+      // Cambiar turno, registrar movimiento
+      CambiarTurno(tableroActual[yDestino][xDestino], posInicial, posDestino);
+
+      // Volver a renderizar tablero y reconfigurar eventos
+      renderizarTablero(tableroActual);
+      configurarEventosPiezas();
+      configurarEventosCasillas();
+
+      piezaArrastrada = null;
+    });
+  });
+}
+
+
+document.addEventListener("DOMContentLoaded", function () // espera a que el DOM esté completamente cargado
+ {
         configurarEventosPiezas();
+        configurarEventosCasillas();
 
 // Convertir posición "a8" a coordenadas [x, y] (ej: "a8" → [0, 0])
-    function posicionACoordenadas(pos) {
+    function posicionACoordenadas(pos) { // pequeña función que dado un string como "e4" te devuelve [4,4] → la usas cada vez que necesitas calcular posiciones.
         const x = pos.charCodeAt(0) - "a".charCodeAt(0); // a=0, b=1, ..., h=7
         const y = 8 - parseInt(pos[1]); // 8=0, 7=1, ..., 1=7
         return [x, y];
@@ -256,3 +288,46 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
     });
 
+/* ---------------LOCAL STORAGE------------------- */
+
+/*
+//Restaura la partida
+    // const partidaGuardada = localStorage.getItem("partidaAjedrez");
+
+    if (partidaGuardada) {
+        const datos = JSON.parse(partidaGuardada);
+        registroMovimientos = datos.movimientos || [];
+        turnoActual = datos.turno || "blancas";
+        numeroMovimiento = datos.numeroMovimiento || 1;
+
+        if (datos.piezas && Array.isArray(datos.piezas)) {
+            const celdas = document.querySelectorAll(".tablero > div");
+            celdas.forEach(celda => celda.innerHTML = "");
+
+            datos.piezas.forEach(pieza => {
+                const celda = document.querySelector(`.${pieza.pos}`);
+                if (celda) {
+                    const span = document.createElement("span");
+                    span.classList.add("pieza", pieza.color);
+                    span.style.fontSize = "2.5rem";
+                    span.setAttribute("draggable", "true");
+                    span.setAttribute("data-info", JSON.stringify({ tipo: pieza.tipo, color: pieza.color }));
+
+                    switch (pieza.tipo) {
+                        case "torre": span.innerHTML = pieza.color === "blanca" ? "&#9814;" : "&#9820;"; break;
+                        case "caballo": span.innerHTML = pieza.color === "blanca" ? "&#9816;" : "&#9822;"; break;
+                        case "alfil": span.innerHTML = pieza.color === "blanca" ? "&#9815;" : "&#9821;"; break;
+                        case "reina": span.innerHTML = pieza.color === "blanca" ? "&#9813;" : "&#9819;"; break;
+                        case "rey": span.innerHTML = pieza.color === "blanca" ? "&#9812;" : "&#9818;"; break;
+                        case "peon": span.innerHTML = pieza.color === "blanca" ? "&#9817;" : "&#9823;"; break;
+                    }
+
+                    celda.appendChild(span);
+                }
+            });
+        }
+
+            actualizarListaMovimientos();
+            document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
+        }
+*/

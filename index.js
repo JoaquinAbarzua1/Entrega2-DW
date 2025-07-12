@@ -184,7 +184,7 @@ app.get('/partida',  (req, res) => {
   const tablero = crearTablero();
   res.render('partida', { 
     tablero,
-     // Pasa el nombre de usuario
+    turno: "blancas" // quitar esto = que no sea el turno de nadie
   });
 });
 
