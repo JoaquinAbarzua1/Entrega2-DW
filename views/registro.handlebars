@@ -38,7 +38,7 @@ background-attachment: fixed;
     <main class="register-container">
       <section class="register-form">
         <h2>Crea tu cuenta</h2>
-        <form id="registroform">
+        <form id="registroform" method="POST" action="/registro">
           <div class="form-group">
             <input
               type="text"
@@ -119,25 +119,6 @@ background-attachment: fixed;
           <button type="submit" class="buttons">Registrarse</button>
         </form>
 
-        <script>
-  document.querySelector("form").addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const email = document.getElementById("usernamme").value; // OJO: es 'usernamme' con doble m
-    const password = document.getElementById("password").value;
-
-    if (localStorage.getItem(email)) {
-      alert("Usuario ya registrado");
-      return;
-    }
-
-    const user = { username: email, password };
-    localStorage.setItem(email, JSON.stringify(user));
-    localStorage.setItem("usuarioAutenticado", "true");
-    localStorage.setItem("usuarioActual", email);
-    window.location.href = "/principal";
-  });
-</script>
         <div class="login-link">
           <p>
             ¿Ya tienes una cuenta? <a href="login">Inicia sesión aquí</a>

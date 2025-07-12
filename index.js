@@ -134,7 +134,7 @@ app.post('/login', async (req, res) => {
   const { username, password } = req.body
 
   try {
-    const usuario = await Usuario.findOne({ username })
+    const usuario = await Usuario.findOne({ email: username })
     if (!usuario || !(await bcrypt.compare(password, usuario.password))) {
       return res.send('Credenciales inválidas. <a href="/login">Intentar de nuevo</a>')
     }
@@ -156,9 +156,7 @@ app.get('/logout', (req, res) => {
 //Ruta raíz
 //app.get('/', estaLoggeado ,(req, res) => { //hacer funcion estaLogeado
 app.get('/principal',  (req, res) => {
-  res.redirect('/', { 
-     
-  });
+  res.redirect('/');
 });
 app.get('/',  (req, res) => {
   res.render('principal', {  });
