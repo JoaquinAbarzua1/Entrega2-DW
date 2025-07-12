@@ -140,6 +140,7 @@ function posicionACoordenadas(pos) {
     const y = 8 - parseInt(pos[1]); 
     return [x, y];
 }
+
 function configurarEventosCasillas() {
   document.querySelectorAll(".tablero > div").forEach(casilla => {
     casilla.addEventListener("dragover", (e) => {
@@ -157,6 +158,12 @@ function configurarEventosCasillas() {
       // Obtener tipo y color de la pieza
       const tipoPieza = JSON.parse(piezaArrastrada.getAttribute("data-info")).tipo;
       const colorPieza = piezaArrastrada.classList.contains("negra") ? "negra" : "blanca";
+
+        // Verificar si la casilla destino ya tiene una pieza
+        const piezaEnDestino = tableroActual[yDestino][xDestino];
+        if(piezaEnDestino && piezaEnDestino.color === colorPieza) {
+            alert("No puedes mover a una casilla ocupada por tu propia pieza.");
+            return;}
 
       // Verificar si es un movimiento válido
       let movimientosValidos = [];
@@ -201,6 +208,7 @@ function configurarEventosCasillas() {
       configurarEventosCasillas();
 
       piezaArrastrada = null;
+      posInicial = null;
     });
   });
 }
@@ -210,81 +218,6 @@ document.addEventListener("DOMContentLoaded", function () // espera a que el DOM
  {
         configurarEventosPiezas();
         configurarEventosCasillas();
-
-// Convertir posición "a8" a coordenadas [x, y] (ej: "a8" → [0, 0])
-    function posicionACoordenadas(pos) { // pequeña función que dado un string como "e4" te devuelve [4,4] → la usas cada vez que necesitas calcular posiciones.
-        const x = pos.charCodeAt(0) - "a".charCodeAt(0); // a=0, b=1, ..., h=7
-        const y = 8 - parseInt(pos[1]); // 8=0, 7=1, ..., 1=7
-        return [x, y];
-    }
-        // Habilita cada casilla como zona de "soltar"
-    document.querySelectorAll(".tablero > div").forEach(casilla => {
-        casilla.addEventListener("dragover", (e) => {
-            e.preventDefault(); // Necesario para permitir drop
-        });
-
-        casilla.addEventListener("drop", (e) => {
-            e.preventDefault();
-            if (!piezaArrastrada) return; // LOGICA DE VALIDACION DE MOVIMIENTO [LINEA 443-492]
-
-            const posDestino = casilla.className.match(/([a-h][1-8])/)[0]; // Ej: "b6"
-            const [xInicial, yInicial] = posicionACoordenadas(posInicial);
-            const [xDestino, yDestino] = posicionACoordenadas(posDestino);
-
-            // Obtener tipo y color de la pieza (desde data-info o clases)
-            const tipoPieza = JSON.parse(piezaArrastrada.getAttribute("data-info")).tipo ;
-            const colorPieza = piezaArrastrada.classList.contains("negra") ? "negra" : "blanca";
-
-            // Verificar movimiento válido
-            let movimientosValidos = [];
-            switch (tipoPieza) {
-                case "caballo":
-                    movimientosValidos = movimientosCaballo(xInicial, yInicial);
-                    break;
-                case "alfil":
-                    movimientosValidos = movimientosAlfil(xInicial, yInicial);
-                    break;
-                case "torre":
-                    movimientosValidos = movimientosTorre(xInicial, yInicial);
-                    break;
-                case "reina":
-                    movimientosValidos = movimientosReina(xInicial, yInicial);
-                    break;
-                case "rey":
-                    movimientosValidos = movimientosRey(xInicial, yInicial);
-                    break;
-                case "peon":
-                    movimientosValidos = movimientosPeon(xInicial, yInicial, colorPieza);
-                    break;
-            }
-
-            // Verificar si el destino está en movimientos válidos
-            const movimientoPermitido = movimientosValidos.some(([x, y]) => 
-                x === xDestino && y === yDestino
-            );
-
-            // Verificar si hay una pieza del mismo color en el destino
-            const piezaDestino = casilla.querySelector(".pieza");
-            const mismoColor = piezaDestino && piezaDestino.classList.contains(colorPieza);
-
-            // Evita que se agregue más de una pieza en la misma casilla
-            if(movimientoPermitido && !mismoColor){
-                const piezaInfo = JSON.parse(piezaArrastrada.getAttribute("data-info"));
-                const desde = posInicial;
-                const hacia = posDestino;
-                casilla.innerHTML = "";
-                casilla.appendChild(piezaArrastrada);
-                CambiarTurno(piezaInfo.tipo, desde, hacia);
-                guardarTableroEnServidor(obtenerEstadoTablero());
-            }
-
-            piezaArrastrada = null;
-            posInicial = null;
-            
-        });
-        });
-
-
         document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
     });
 
