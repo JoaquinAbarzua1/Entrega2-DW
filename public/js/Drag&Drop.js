@@ -85,13 +85,19 @@ function CambiarTurno(pieza, desde, hacia) {
 }
 
 async function guardarTableroEnServidor(tablero) {
-    const partidaId = window.location.pathname.split("/").pop(); // Obtiene el ID de la partida desde la URL
-await fetch(`/api/partidas/${partidaId}/tablero`,{
+  const partidaId = window.partidaId;
+  if (!partidaId) {
+    console.error("No hay partidaId, no se guarda el tablero.");
+    return;
+  }
+
+  await fetch(`/api/partidas/${partidaId}/tablero`, {
     method: "POST",
-    headers: { "Content-Type": "application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ tablero })
-});
+  });
 }
+
 
 function obtenerEstadoTablero() {
     const matriz = Array.from({ length: 8 }, () => Array(8).fill(null));
@@ -217,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function () // espera a que el DOM
         document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
     });
 
-/* ---------------LOCAL STORAGE------------------- */
+/* ---------------LOCAL STORAGE------------------- */ // no pescar pq ya no usamos localStorage xd
 
 /*
 //Restaura la partida

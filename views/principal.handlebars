@@ -1,17 +1,5 @@
 <body>
- <script>
-  /*
-  // Verificar si hay usuario logueado
-  const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
-  if (!usuarioActual) {
-    window.location.href = '/login';
-  } else {
-    document.getElementById('bienvenida').textContent = 
-      `Bienvenido, ${usuarioActual.username}`;
-  }
-  */
-</script> 
-</body>
+
     <header>
       <h1>Bienvenido usuario</h1>
       <h2>Tus estadísticas y datos de tus partidas</h2>
@@ -81,13 +69,7 @@ background-attachment: fixed
 
       <section>
         <h2>Nueva partida</h2>
-        <form action="/partida" method="GET">
-          <select name="game-type">
-            <option value="public">Pública (cualquiera puede unirse)</option>
-            <option value="private">Privada (solo con invitación)</option>
-          </select>
-          <button type="submit">Crear Partida</button>
-        </form>
+    <button id="btnNuevaPartida">Crear Partida</button>
       </section>
 
       <section>
@@ -104,3 +86,6 @@ background-attachment: fixed
         </table>
       </section>
     </main>
+    <script src="js/BotonesPartida.js"></script>
+</body>
+    

@@ -83,32 +83,12 @@ const Partida = mongoose.model('Partida', PartidaSchema);
 
 //-------------------------Rutas-------------------------------------------------------------------------------------------
 
-
-
-
 //Ruta GET para mostrar formulario de registro
 app.get('/registro', (req, res) => {
   res.render('registro')
 });
 
-//Ruta POST para registrar un nuevo usuario Local Storage
-/*
-app.post('/registro', (req, res) => {
-  const { username, password } = req.body;
-  const existe = usuarios.find(u => u.username === username);
-
-  if (existe) {
-    return res.send('Usuario ya existe. <a href="/registro">Volver</a>');
-  }
-
-  usuarios.push({ username, password });
-  fs.writeFileSync(DB_FILE, JSON.stringify(usuarios)); // Guarda en archivo
-  res.redirect('/login');
-});
-*/
-
 //post que usa mongoose
-
 app.post('/registro', async (req, res) => { // cambiar nombre a 'register' si hay problemas
   const { username, email, nombre, apellido, birthdate, password } = req.body
   const hash = await bcrypt.hash(password,10);
@@ -185,6 +165,7 @@ app.get('/partida',  (req, res) => {
   res.render('partida', { 
     tablero,
     turno: "blancas" // quitar esto = que no sea el turno de nadie
+    
   });
 });
 
@@ -193,8 +174,7 @@ app.get('/partida/:id', async (req, res) => {
   if(!partida) return res.status(404).send('Partida no encontrada');
   res.render('partida' ,{
     tablero: partida.tablero,
-    letras,
-    iconos,
+    turno: "blancas",
     partidaId: partida._id
   }); 
 });
@@ -202,7 +182,9 @@ app.get('/partida/:id', async (req, res) => {
 
 // RUTA PARA NUEVA PARTIDA 
 app.post('/nueva-partida', async (req,res) =>{
-  if(!req.session.userId) return res.status(401).json({ success: false, error: 'No autenticado'});
+  if(!req.session.userId) {
+    console.log("Creando nueva partida para userId:", req.session.userId);
+return res.status(401).json({ success: false, error: 'No autenticado'});}
   
   const nuevaPartida = new Partida({
     jugador1: req.session.userId,
@@ -210,6 +192,7 @@ app.post('/nueva-partida', async (req,res) =>{
     tablero: crearTablero()
   });
   await nuevaPartida.save();
+  console.log("Partida creada:", nuevaPartida._id);
   res.json({ success: true, partidaId: nuevaPartida._id});
 });
 
