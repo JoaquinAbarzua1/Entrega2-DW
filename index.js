@@ -24,6 +24,7 @@ app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 app.use(session({
   secret: 'mi_secreto',
   resave: false,
@@ -34,7 +35,7 @@ app.use(session({
 
 app.use(bodyParser.urlencoded({ extended: true })); //Activa body-parser para leer formularios
 
-app.use(cookieParser());
+
 
 
 //-----------------------Mongoose-----------------------------------------------------------------------------------------------------
@@ -69,7 +70,7 @@ mongoose.connect('mongodb+srv://joaquinabarzua:'+process.env.PASS+'@cluster0.avk
 
 const PartidaSchema = new mongoose.Schema({
   jugador1: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario", required: true }, 
-  jugador2: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
+  jugador2: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario'}, // luego, cambiar a required: true si se implementa el segundo jugador
   fechaInicio: {type: Date, default: Date.now },
   resultado: {
     type: String,
@@ -121,6 +122,8 @@ app.post('/login', async (req, res) => {
       return res.send('Credenciales inválidas. <a href="/login">Intentar de nuevo</a>')
     }
     req.session.userId = usuario._id // Guarda el ID del usuario en la sesión
+    console.log('Usuario logueado:', usuario._id); // se muestran en la consola del servidor
+console.log('req.session.userId:', req.session.userId);
     res.redirect('/principal')
   } catch (err) {
     console.error('Error al buscar usuario:', err)
