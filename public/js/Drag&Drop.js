@@ -11,7 +11,10 @@ const jugadores = {
     negras: "Jugador 2"
 };
 
-// Funciones..
+// Tablero inicial
+let tableroActual = tableroInicial;
+
+//-------RENDIRIZAR TABLERO-----------
 
 function renderizarTablero(tablero) {
   const letras = ["a","b","c","d","e","f","g","h"];
@@ -37,29 +40,9 @@ function renderizarTablero(tablero) {
     }
   }
 }
-renderizarTablero(tableroInicial);
-let tableroActual = tableroInicial;
-renderizarTablero(tableroActual);
-configurarEventosPiezas();
 
+// --------------------------HELPERS--------------------------------
 
-function obtenerEstadoTablero() {
-    const matriz = Array.from({ length: 8 }, () => Array(8).fill(null));
-    document.querySelectorAll(".tablero > div").forEach(celda => {
-        const clase = celda.className.match(/([a-h][1-8])/);
-        if (!clase) return;
-        const pos = clase[0];
-        const x = pos.charCodeAt(0) - "a".charCodeAt(0); // a=0, b=1, ..., h=7
-        const y = 8 - parseInt(pos[1]); // 8=0, 7=1, ..., 1=7
-        const pieza = celda.querySelector(".pieza");
-        if (pieza) {
-            const info = JSON.parse(pieza.getAttribute("data-info"));
-            matriz[y][x] = { tipo: info.tipo, color: info.color };
-        }
-    });
-    return matriz;
-}
-// Helper para obtener el símbolo Unicode de la pieza
 function obtenerSimboloPieza(tipo, color) {
   const simbolos = {
     torre: { blanca: "♖", negra: "♜" },
@@ -72,19 +55,25 @@ function obtenerSimboloPieza(tipo, color) {
   return simbolos[tipo][color];
 }
 
+function posicionACoordenadas(pos) {
+    const x = pos.charCodeAt(0) - "a".charCodeAt(0); 
+    const y = 8 - parseInt(pos[1]); 
+    return [x, y];
+}
+
+function actualizarListaMovimientos(){
+    const lista = document.getElementById("lista-movimientos");
+        lista.innerHTML = registroMovimientos.map(mov => `<div class=movimiento>${mov}</div>`).join("");
+}
+
+//----------------TURNOS Y PERSISTENCIA-----------------
+
 function CambiarTurno(pieza, desde, hacia) {
     turnoActual = turnoActual === "blancas" ? "negras" : "blancas";
     // registrar el movimiento
 
     const notacion = `${numeroMovimiento}. ${desde} → ${hacia}`;
     registroMovimientos.push(notacion);
-            
-    // Persitencia..
-    /* localStorage.setItem("partidaAjedrez", JSON.stringify({
-        movimientos: registroMovimientos , turno: turnoActual , numeroMovimiento: numeroMovimiento, piezas: obtenerEstadoTablero()
-    })); */
-
-    // actualizar lista de movimientos
     actualizarListaMovimientos();
 
     // Solo incrementa el numero despues del turno de negras
@@ -104,11 +93,23 @@ await fetch(`/api/partidas/${partidaId}/tablero`,{
 });
 }
 
-function actualizarListaMovimientos(){
-    const lista = document.getElementById("lista-movimientos");
-        lista.innerHTML = registroMovimientos.map(mov => `<div class=movimiento>${mov}</div>`).join("");
+function obtenerEstadoTablero() {
+    const matriz = Array.from({ length: 8 }, () => Array(8).fill(null));
+    document.querySelectorAll(".tablero > div").forEach(celda => {
+        const clase = celda.className.match(/([a-h][1-8])/);
+        if (!clase) return;
+        const pos = clase[0];
+        const x = pos.charCodeAt(0) - "a".charCodeAt(0); // a=0, b=1, ..., h=7
+        const y = 8 - parseInt(pos[1]); // 8=0, 7=1, ..., 1=7
+        const pieza = celda.querySelector(".pieza");
+        if (pieza) {
+            const info = JSON.parse(pieza.getAttribute("data-info"));
+            matriz[y][x] = { tipo: info.tipo, color: info.color };
+        }
+    });
+    return matriz;
 }
-
+//------------------EVENTOS DE DRAG & DROP---------------------
 
 function configurarEventosPiezas() {
     document.querySelectorAll(".pieza").forEach(pieza => {
@@ -134,11 +135,6 @@ function configurarEventosPiezas() {
             pieza.classList.remove("arrastrando"); // Remueve la clase al terminar
         });
     });
-}
-function posicionACoordenadas(pos) {
-    const x = pos.charCodeAt(0) - "a".charCodeAt(0); 
-    const y = 8 - parseInt(pos[1]); 
-    return [x, y];
 }
 
 function configurarEventosCasillas() {
@@ -212,10 +208,10 @@ function configurarEventosCasillas() {
     });
   });
 }
-
-
+//------------------INICIALIZACIÓN DE EVENTOS---------------------
 document.addEventListener("DOMContentLoaded", function () // espera a que el DOM esté completamente cargado
  {
+        renderizarTablero(tableroActual);
         configurarEventosPiezas();
         configurarEventosCasillas();
         document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
