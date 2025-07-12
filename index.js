@@ -15,7 +15,8 @@ app.engine('handlebars', engine({
   defaultLayout: 'main', partialsDir: path.join(__dirname, 'views', 'partials'), 
   helpers: {
     eq: (a, b) => a === b,
-    isWhiteCell: (row, col) => (row + col) % 2 === 0
+    isWhiteCell: (row, col) => (row + col) % 2 === 0,
+    json: (context) => JSON.stringify(context, null, 2) // Helper para serializar objetos a JSON
   }
 
 }));
@@ -74,7 +75,8 @@ const PartidaSchema = new mongoose.Schema({
     type: String,
     enum: ['jugador1', 'jugador2', 'empate', 'en_curso'],
     default: 'en_curso'
-  }
+  },
+  tablero: { type: Array, default: [] }
 });
 
 const Partida = mongoose.model('Partida', PartidaSchema);
@@ -186,14 +188,38 @@ app.get('/partida',  (req, res) => {
   });
 });
 
-
-// RUTA PARA NUEVA PARTIDA 
-app.post('/nueva-partida', (req,res) =>{
-  //Aqui iria la logica para reiniciar el estado del juego
-  //Por ahora simplemente se redigira a la misma pagina de esta forma
-  res.redirect('/partida'); // despues se tendra que hacer otras cosas pero por ahora se queda asi.
+app.get('/partida/:id', async (req, res) => {
+  const partida = await Partida.findById(req.params.id);
+  if(!partida) return res.status(404).send('Partida no encontrada');
+  res.render('partida' ,{
+    tablero: partida.tablero,
+    letras,
+    iconos,
+    partidaId: partida._id
+  }); 
 });
 
+
+// RUTA PARA NUEVA PARTIDA 
+app.post('/nueva-partida', async (req,res) =>{
+  if(!req.session.userId) return res.status(401).json({ success: false, error: 'No autenticado'});
+  
+  const nuevaPartida = new Partida({
+    jugador1: req.session.userId,
+    resultado: 'en_curso',
+    tablero: crearTablero()
+  });
+  await nuevaPartida.save();
+  res.json({ success: true, partidaId: nuevaPartida._id});
+});
+
+app.post('/api/partidas/:id/tablero', async (req, res) => {
+  const partida = await Partida.findById(req.params.id);
+  if (!partida) return res.status(404).json({ success: false });
+  partida.tablero = req.body.tablero;
+  await partida.save();
+  res.json({ success: true });
+});
 
 //RUTA PARA RENDIRSE
 app.post('/rendirse', (req,res)=>{
