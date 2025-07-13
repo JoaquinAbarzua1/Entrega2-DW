@@ -162,13 +162,16 @@ app.get('/historia', (req, res) => {
 });
 
 //Ruta GET para mostrar formulario de registro
-app.get('/partida',  (req, res) => {
-  const tablero = crearTablero();
-  res.render('partida', { 
-    tablero,
-    turno: "blancas" // quitar esto = que no sea el turno de nadie
-    
-  });
+app.get('/partida', async (req, res) => {
+  if(!req.session.userId) {
+    console.log("No autenticado, redirigiendo a login");
+    return res.redirect('/login');}
+    // Buscar la ultima partida en curso del usuario
+    const partida = await Partida.findOne({ jugador1: req.session.userId, resultado: 'en_curso' });
+  if (!partida) {
+    return res.redirect('/'); // Redirigir a la página principal si no hay partida en curso
+  }
+  res.redirect('/partida/' + partida._id);
 });
 
 app.get('/partida/:id', async (req, res) => {
