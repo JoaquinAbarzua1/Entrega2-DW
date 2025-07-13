@@ -94,7 +94,7 @@ async function guardarTableroEnServidor(tablero) {
   await fetch(`/api/partidas/${partidaId}/tablero`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tablero })
+    body: JSON.stringify({ tablero, turno: turnoActual })
   });
 }
 
@@ -115,6 +115,29 @@ function obtenerEstadoTablero() {
     });
     return matriz;
 }
+
+setInterval(async () => {
+  try {
+    const respuesta = await fetch(`/api/partidas/${partidaId}/tablero`);
+    if (respuesta.ok) {
+      const data = await respuesta.json();
+      
+      // Solo actualiza si cambió (opcional)
+      if (JSON.stringify(data.tablero) !== JSON.stringify(tableroActual)) {
+        tableroActual = data.tablero;
+        turnoActual = data.turno;
+
+        renderizarTablero(tableroActual);
+        configurarEventosPiezas();
+        configurarEventosCasillas();
+        document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
+      }
+    }
+  } catch (error) {
+    console.error("Error al sincronizar tablero:", error);
+  }
+}, 5000); // cada 5 segundos
+
 //------------------EVENTOS DE DRAG & DROP---------------------
 
 function configurarEventosPiezas() {

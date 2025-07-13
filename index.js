@@ -34,9 +34,7 @@ app.use(session({
 
 
 app.use(bodyParser.urlencoded({ extended: true })); //Activa body-parser para leer formularios
-
-
-
+app.use(bodyParser.json()); // Activa body-parser para leer JSON
 
 //-----------------------Mongoose-----------------------------------------------------------------------------------------------------
 
@@ -77,7 +75,8 @@ const PartidaSchema = new mongoose.Schema({
     enum: ['jugador1', 'jugador2', 'empate', 'en_curso'],
     default: 'en_curso'
   },
-  tablero: { type: Array, default: [] }
+  tablero: { type: Array, default: [] },
+   turno: { type: String, enum: ['blancas', 'negras'], default: 'blancas' } // turno actual
 });
 
 const Partida = mongoose.model('Partida', PartidaSchema);
@@ -184,27 +183,58 @@ app.get('/partida/:id', async (req, res) => {
 
 
 // RUTA PARA NUEVA PARTIDA 
-app.post('/nueva-partida', async (req,res) =>{
-  if(!req.session.userId) {
-    console.log("Creando nueva partida para userId:", req.session.userId);
-return res.status(401).json({ success: false, error: 'No autenticado'});}
-  
+app.post('/nueva-partida', async (req, res) => {
+  console.log("Intentando crear partida, session.userId:", req.session.userId);
+  if (!req.session.userId) {
+    console.log("No autenticado, asignando temporal userId");
+    req.session.userId = "687226b98144725e0984dcf6"; // usa aquí un id real de tu colección Usuario
+  }
   const nuevaPartida = new Partida({
     jugador1: req.session.userId,
-    resultado: 'en_curso',
     tablero: crearTablero()
   });
   await nuevaPartida.save();
-  console.log("Partida creada:", nuevaPartida._id);
-  res.json({ success: true, partidaId: nuevaPartida._id});
+  res.json({ success: true, partidaId: nuevaPartida._id });
 });
 
+app.get('/api/partidas/:id/tablero', async (req, res) => {
+  try {
+    const partida = await Partida.findById(req.params.id);
+    if (!partida) return res.status(404).json({ success: false, error: 'Partida no encontrada' });
+
+    res.json({
+      success: true,
+      tablero: partida.tablero,
+      turno: partida.turno
+    });
+  } catch (err) {
+    console.error('Error al obtener tablero:', err);
+    res.status(500).json({ success: false, error: 'Error interno' });
+  }
+});
+
+
 app.post('/api/partidas/:id/tablero', async (req, res) => {
-  const partida = await Partida.findById(req.params.id);
-  if (!partida) return res.status(404).json({ success: false });
-  partida.tablero = req.body.tablero;
-  await partida.save();
-  res.json({ success: true });
+  try {
+    const partida = await Partida.findById(req.params.id);
+    if (!partida) return res.status(404).json({ success: false, error: 'Partida no encontrada' });
+
+    // req.body debe traer { tablero, turno }
+    const { tablero, turno } = req.body;
+    if (!tablero || !turno) {
+      return res.status(400).json({ success: false, error: 'Faltan datos' });
+    }
+
+    partida.tablero = tablero;
+    partida.turno = turno;
+
+    await partida.save();
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error al actualizar tablero:', err);
+    res.status(500).json({ success: false, error: 'Error interno' });
+  }
 });
 
 //RUTA PARA RENDIRSE
