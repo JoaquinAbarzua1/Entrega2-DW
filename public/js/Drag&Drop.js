@@ -113,22 +113,6 @@ socket.on("error-movimiento", (error) => {
     configurarEventosCasillas();
     alert(`Error: ${error.error}`);
 });
-/*
-async function guardarTableroEnServidor(tablero) {
-  const partidaId = window.partidaId;
-  if (!partidaId) {
-    console.error("No hay partidaId, no se guarda el tablero.");
-    return;
-  }
-
-  await fetch(`/api/partidas/${partidaId}/tablero`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tablero, turno: turnoActual })
-  });
-}
-  FUNCION A SER ELIMINADA  */
-
 
 function obtenerEstadoTablero() {
     const matriz = Array.from({ length: 8 }, () => Array(8).fill(null));
@@ -146,29 +130,6 @@ function obtenerEstadoTablero() {
     });
     return matriz;
 }
-/*
-setInterval(async () => {
-  try {
-    const respuesta = await fetch(`/api/partidas/${partidaId}/tablero`);
-    if (respuesta.ok) {
-      const data = await respuesta.json();
-      
-      // Solo actualiza si cambió (opcional)
-      if (JSON.stringify(data.tablero) !== JSON.stringify(tableroActual)) {
-        tableroActual = data.tablero;
-        turnoActual = data.turno;
-
-        renderizarTablero(tableroActual);
-        configurarEventosPiezas();
-        configurarEventosCasillas();
-        document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
-      }
-    }
-  } catch (error) {
-    console.error("Error al sincronizar tablero:", error);
-  }
-}, 5000); // cada 5 segundos
- A SER ELIMINADO  */
 
 //------------------EVENTOS DE DRAG & DROP---------------------
 

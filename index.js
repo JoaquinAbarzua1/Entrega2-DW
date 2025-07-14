@@ -8,7 +8,14 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const http = require('http');
-const { Server } = require('socket.io');  
+const { Server } = require('socket.io'); 
+const sharedSession = require('express-socket.io-session'); 
+
+const sessionMiddleware = session({
+  secret: 'mi_secreto',
+  resave: false,
+  saveUninitialized: false,
+});
 
 
 const app = express();
@@ -36,9 +43,9 @@ app.use(session({
   secret: 'mi_secreto',
   resave: false,
   saveUninitialized: false,
-  cookie: {secure: false} // Cambiar a true si se usa HTTPS
+  cookie: {maxAge: 1000 * 60 * 60 * 24,} // Cambiar a true si se usa HTTPS
 })); 
-
+app.use(sessionMiddleware); // Añadir middleware de sesión a Socket.io
 
 app.use(bodyParser.urlencoded({ extended: true })); //Activa body-parser para leer formularios
 app.use(bodyParser.json()); // Activa body-parser para leer JSON
@@ -86,7 +93,17 @@ const PartidaSchema = new mongoose.Schema({
 const Partida = mongoose.model('Partida', PartidaSchema);
 
 //--------------- Configuración de WebSockets (Socket.io) -----------------------------
+  io.use(sharedSession(sessionMiddleware, {
+    autoSave: true // Guarda la sesión automáticamente
+  }));
 
+  io.use((socket, next) => {
+    const session = socket.request.session;
+    if(session && session.userId){
+      return next();
+    }
+    next (new Error('No autenticado'));
+  });
 // Configuración de Socket.io (añadir esto ANTES del server.listen)
 io.on('connection', (socket) => {
   // Manejo de errores en el socket
@@ -135,13 +152,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  io.use((socket, next) => {
-    const session = socket.request.session;
-    if(session && session.userId){
-      return next();
-    }
-    next (new Error('No autenticado'));
-  });
+
   socket.on('disconnect', () => {
     console.log('Cliente desconectado:', socket.id);
     // se puede añadir lógica para manejar la desconexión o abandonos de partida, como guardar el estado de la partida.
@@ -242,12 +253,15 @@ app.get('/partida', async (req, res) => {
 });
 
 app.get('/partida/:id', async (req, res) => {
-  const partida = await Partida.findById(req.params.id);
-  if(!partida) return res.status(404).send('Partida no encontrada');
+  const partidaId = req.params.id;
+  const partida = await Partida.findById(partidaId);
+  if(!partida) {return res.status(404).send('Partida no encontrada');}
+
   res.render('partida' ,{
     tablero: partida.tablero,
     turno: "blancas",
-    partidaId: partida._id
+    partidaId: partida._id,
+    usuario: req.session.usuario
   }); 
 });
 
