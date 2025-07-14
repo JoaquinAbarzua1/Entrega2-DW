@@ -239,8 +239,14 @@ console.log('🔐 Sesión después del login:', req.session);
 });
 
 app.get('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/');
+  req.session.destroy((err) => {
+    if(err){
+      console.error('❌ Error al destruir la sesión:', err);
+      return res.redirect('/');
+    }
+    res.clearCookie('connect.sid', {path: '/'}); // Limpiar la cookie de sesión
+    console.log('🔓 Sesión destruida y cookie eliminada')
+    res.redirect('/login'); // o '/'
   });
 });
 
@@ -295,7 +301,8 @@ app.get('/partida/:id', async (req, res) => {
 
   // Si no es jugador1 ni jugador2 → deniego
   if (![String(partida.jugador1), String(partida.jugador2)].includes(String(req.session.userId))) {
-    return res.status(403).send('No tienes permiso para acceder a esta partida.');
+    res.status(403).send('No tienes permiso para acceder a esta partida.');
+    return res.redirect('/'); // Redirigir a la página principal si no es jugador1 ni jugador2
   }
 
   res.render('partida' ,{
