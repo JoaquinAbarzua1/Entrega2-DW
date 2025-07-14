@@ -105,32 +105,34 @@ io.on('connection', (socket) => {
       });
     }
   });
-  socket.on('mover-pieza', async (data) => {
-    try {
-      const partida = await Partida.findByIdAndUpdate(data.partidaId, {
-        $set: {
-          tablero: data.tablero,
-          turno: data.turno
-        }
-      }, 
-      { new: true });
-      if (!partida) return;
-      /* para actualizar el tablero y turno en la base de datos
-      partida.tablero = data.tablero;
-      partida.turno = data.turno;
-      await partida.save();
-      */
+socket.on('mover-pieza', async (data) => {
+  try {
+    const partida = await Partida.findById(data.partidaId);
+    if (!partida) return;
 
-      io.to(data.partidaId).emit('actualizar-tablero', {
-        tablero: partida.tablero,
-        turno: partida.turno,
-        ultimoMovimiento: data.Movimiento
-      });
-    } catch (error) {
-      console.error('Error al mover pieza:', error);
-      socket.emit('error-movimiento', {error: 'Error al mover la pieza. Inténtalo de nuevo.'});
+    // Validar que el que mueve sea jugador que tiene el turno
+    const userId = String(socket.request.session.userId);
+    const esTurnoJugador1 = partida.turno === 'blancas' && String(partida.jugador1) === userId;
+    const esTurnoJugador2 = partida.turno === 'negras' && String(partida.jugador2) === userId;
+    if (!(esTurnoJugador1 || esTurnoJugador2)) {
+      return socket.emit('error-movimiento', {error: 'No es tu turno'});
     }
-  });
+
+    // Actualizar tablero y turno
+    partida.tablero = data.tablero;
+    partida.turno = data.turno;
+    await partida.save();
+
+    io.to(data.partidaId).emit('actualizar-tablero', {
+      tablero: partida.tablero,
+      turno: partida.turno,
+      ultimoMovimiento: data.Movimiento
+    });
+  } catch (error) {
+    console.error('Error al mover pieza:', error);
+    socket.emit('error-movimiento', {error: 'Error al mover la pieza'});
+  }
+});
 
 
   socket.on('disconnect', () => {
@@ -285,12 +287,43 @@ app.get('/partida/:id', async (req, res) => {
   const partida = await Partida.findById(partidaId);
   if(!partida) {return res.status(404).send('Partida no encontrada');}
 
+   // Si el user no es jugador1 ni jugador2, y jugador2 está libre → lo asigno como jugador2
+  if (!partida.jugador2 && String(partida.jugador1) !== String(req.session.userId)) {
+    partida.jugador2 = req.session.userId;
+    await partida.save();
+  }
+
+  // Si no es jugador1 ni jugador2 → deniego
+  if (![String(partida.jugador1), String(partida.jugador2)].includes(String(req.session.userId))) {
+    return res.status(403).send('No tienes permiso para acceder a esta partida.');
+  }
+
   res.render('partida' ,{
     tablero: partida.tablero,
     turno: partida.turno,
     partidaId: partida._id,
-    usuario: req.session.usuario
+    esJugador1: String(partida.jugador1) === String(req.session.userId), // Para saber si es jugador1
   }); 
+});
+
+// Nueva ruta, eliminar partida
+app.delete('/api/eliminar-partida/:id', async (req, res) => {
+  if (!req.session.userId) return res.status(401).send('No autenticado');
+  const partida = await Partida.findById(req.params.id);
+  if (!partida) return res.status(404).send('Partida no encontrada');
+  if (String(partida.jugador1) !== String(req.session.userId)) return res.status(403).send('No autorizado');
+  await Partida.deleteOne({ _id: req.params.id });
+  res.json({ success: true });
+});
+
+// Nueva ruta, estado de la partida cada 5s
+app.get('/api/estado-partida/:id', async (req, res) => {
+  const partida = await Partida.findById(req.params.id);
+  if (!partida) return res.status(404).send('Partida no encontrada');
+  res.json({
+    tablero: partida.tablero,
+    turno: partida.turno
+  });
 });
 
 
@@ -309,7 +342,8 @@ app.post('/nueva-partida', async (req, res) => {
     tablero: crearTablero()
   });
   await nuevaPartida.save();
-  res.json({ success: true, partidaId: nuevaPartida._id });
+  const linkInvitacion = `${req.protocol}://${req.get('host')}/partida/${nuevaPartida._id}`;
+  res.json({ success: true, partidaId: nuevaPartida._id, linkInvitacion });
 });
 //RUTA PARA RENDIRSE
 app.post('/rendirse', (req,res)=>{

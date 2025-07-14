@@ -1,6 +1,6 @@
 // socket.js
 function iniciarSocket() {
-  const socket = io("http://localhost:3000", { withCredentials: true });
+  const socket = io();
 
   socket.on("connect", () => {
     console.log("✅ Conectado al servidor con socket ID:", socket.id);

@@ -1,24 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
     const btnNuevaPartida = document.getElementById("btnNuevaPartida");
     if (btnNuevaPartida) {
-        btnNuevaPartida.addEventListener("click", async () => {
-            if (confirm("Estas seguro de crear una nueva partida?")) {
-                try {
-                    const respuesta = await fetch("/nueva-partida", { 
-                        method: "POST", 
-                        headers: {"Content-Type": "application/json"}
-                    });
-                    if (respuesta.ok) {
-                        const data = await respuesta.json();
-                        window.location.href = `/partida/${data.partidaId}`; 
-                    } else {
-                        alert("No se pudo crear nueva partida");
-                    }
-                } catch (error) {
-                    console.error("Error:", error);
-                }
+       btnNuevaPartida.addEventListener("click", async () => {
+    if (confirm("Estas seguro de crear una nueva partida?")) {
+        try {
+            const respuesta = await fetch("/nueva-partida", { method: "POST", headers: {"Content-Type": "application/json"} });
+            if (respuesta.ok) {
+                const data = await respuesta.json();
+                alert(`Invita a tu amigo con este link: ${data.linkInvitacion}`);
+                window.location.href = `/partida/${data.partidaId}`;
+            } else {
+                alert("No se pudo crear nueva partida");
             }
-        });
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+});
+
     }
 
     const btnRendirse = document.getElementById("btnRendirse");
