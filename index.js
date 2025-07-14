@@ -7,6 +7,10 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 
+// Añade esto junto con los otros require al inicio (Para usar WebSockets)
+const http = require('http');  // <-- Añadir esta línea
+const { Server } = require('socket.io');  // <-- Añadir esta línea
+
 const app = express()
 const PORT = process.env.PORT || 3000;
 const DB_FILE = path.join(__dirname, 'usuarios.json');
@@ -300,6 +304,45 @@ function crearTablero() {
 //---------------------------------------------------------------------------------------------------------------------------------------
 //Iniciar el servidor
 
-app.listen(PORT, () => {
-  console.log(`App escuchando en http://localhost:${PORT}`)
+const server = http.createServer(app);
+const io = new Server(server);
+
+// Configuración de Socket.io (añadir esto ANTES del server.listen)
+io.on('connection', (socket) => {
+  console.log('Nuevo cliente conectado:', socket.id);
+
+  socket.on('unirse-partida', async (partidaId) => {
+    socket.join(partidaId);
+    console.log(`Cliente ${socket.id} unido a partida ${partidaId}`);
+    
+    const partida = await Partida.findById(partidaId);
+    if (partida) {
+      socket.emit('estado-inicial', {
+        tablero: partida.tablero,
+        turno: partida.turno
+      });
+    }
+  });
+
+  socket.on('mover-pieza', async (data) => {
+    try {
+      const partida = await Partida.findById(data.partidaId);
+      if (!partida) return;
+
+      partida.tablero = data.tablero;
+      partida.turno = data.turno;
+      await partida.save();
+
+      io.to(data.partidaId).emit('actualizar-tablero', {
+        tablero: partida.tablero,
+        turno: partida.turno
+      });
+    } catch (error) {
+      console.error('Error al mover pieza:', error);
+    }
+  });
+});
+
+server.listen(PORT, () => {
+  console.log(`Servidor con WebSockets escuchando en http://localhost:${PORT}`);
 });
