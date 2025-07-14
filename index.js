@@ -66,7 +66,13 @@ app.use(session({
 // -----------------------------------------------
 
 const server = http.createServer(app); // Crear el servidor con http
-const io = new Server(server); // Inicializar socket.io
+const io = new Server(server,{
+  cors: {
+    origin: 'http://localhost:3000', // Permitir todas las conexiones CORS
+    credentials: true
+     // Métodos permitidos -> methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  }
+}); // Inicializar socket.io
 
 // Conectar sesiones a sockets
   io.use(sharedSession(sessionMiddleware, {
@@ -364,3 +370,58 @@ function crearTablero() {
 server.listen(PORT, () => {
   console.log(`Servidor con WebSockets escuchando en http://localhost:${PORT}`);
 });
+
+/*
+--------------------CAMBIOS PARA NGROK--------------------
+PERMITIR QUE UN AMIGO SEA EL JUGADOR 2
+app.get('/partida/:id', async (req, res) => {
+  const partidaId = req.params.id;
+  const partida = await Partida.findById(partidaId);
+  if (!partida) return res.status(404).send('Partida no encontrada');
+
+  // Si no hay jugador2 y el que entra no es jugador1, lo asignas
+  if (!partida.jugador2 && req.session.userId && req.session.userId.toString() !== partida.jugador1.toString()) {
+    partida.jugador2 = req.session.userId;
+    await partida.save();
+    console.log("✅ Se asignó jugador2:", req.session.userId);
+  }
+
+  res.render('partida', {
+    tablero: partida.tablero,
+    turno: partida.turno,
+    partidaId: partida._id,
+    usuario: req.session.userId // o info del usuario logueado
+  });
+});
+
+VALIDAR QUIEN MUEVE LAS PIEZAS
+socket.on('mover-pieza', async (data) => {
+  const partida = await Partida.findById(data.partidaId);
+  if (!partida) return;
+
+  const userId = socket.request.session?.userId;
+  // Solo pueden mover piezas jugador1 o jugador2
+  if (![partida.jugador1.toString(), partida.jugador2?.toString()].includes(userId)) {
+    return socket.emit('error-movimiento', { error: "No puedes mover piezas en esta partida" });
+  }
+
+  // actualiza tablero y turno
+  partida.tablero = data.tablero;
+  partida.turno = data.turno;
+  await partida.save();
+
+  io.to(data.partidaId).emit('actualizar-tablero', {
+    tablero: partida.tablero,
+    turno: partida.turno,
+    ultimoMovimiento: data.movimiento
+  });
+});
+
+-------------------SCRIPT DE INVITACION--------------------
+// Supón que después de crear partida recibes partidaId
+const partidaId = "666f1234cbd3";
+const urlNgrok = "https://silly-bear.ngrok-free.app";
+const linkInvitacion = `${urlNgrok}/partida/${partidaId}`;
+console.log("📨 Pásale este link a tu amigo:", linkInvitacion);
+
+*/
