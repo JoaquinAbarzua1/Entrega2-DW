@@ -91,29 +91,6 @@ function CambiarTurno(pieza, desde, hacia) {
     });
 }
 
-// Modificar el listener de la actualizacion
-socket.on("actualizar-tablero", (data) =>{
-  // Solo actualizar si el turno recibido es diferente al actual
-  if (data.turno !== turnoActual) {
-    tableroActual = data.tablero;
-    turnoActual = data.turno;
-    renderizarTablero(tableroActual);
-    configurarEventosPiezas();
-    configurarEventosCasillas();
-  }
-});
-
-// Añadir manejo de errores
-socket.on("error-movimiento", (error) => {
-    // Revertir al estado anterior
-    tableroActual = tableroAnterior;
-    turnoActual = turnoAnterior;
-    renderizarTablero(tableroActual);
-    configurarEventosPiezas();
-    configurarEventosCasillas();
-    alert(`Error: ${error.error}`);
-});
-
 function obtenerEstadoTablero() {
     const matriz = Array.from({ length: 8 }, () => Array(8).fill(null));
     document.querySelectorAll(".tablero > div").forEach(celda => {
@@ -248,14 +225,12 @@ document.addEventListener("DOMContentLoaded", function () // espera a que el DOM
         socket.on("error-movimiento", (error) => {
             alert(`Error: ${error.error}`);
             socket.emit("unirse-partida", window.partidaId);
-        });
-
-        // Renderizado inicial
-        renderizarTablero(tableroActual);
+            });
+                    renderizarTablero(tableroActual);
         configurarEventosPiezas();
         configurarEventosCasillas();
-
         document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
+        
     });
 
 /* ---------------LOCAL STORAGE------------------- */ // no pescar pq ya no usamos localStorage xd

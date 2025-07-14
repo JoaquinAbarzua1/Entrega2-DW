@@ -11,6 +11,8 @@ const http = require('http');
 const { Server } = require('socket.io'); 
 const sharedSession = require('express-socket.io-session'); 
 
+
+// Crear middleware de sesión
 const sessionMiddleware = session({
   secret: 'mi_secreto',
   resave: false,
@@ -19,9 +21,6 @@ const sessionMiddleware = session({
 
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
-
 const PORT = process.env.PORT || 3000;
 const DB_FILE = path.join(__dirname, 'usuarios.json');
 
@@ -39,13 +38,18 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
+/*
 app.use(session({
   secret: 'mi_secreto',
   resave: false,
   saveUninitialized: false,
   cookie: {maxAge: 1000 * 60 * 60 * 24,} // Cambiar a true si se usa HTTPS
 })); 
+*/
 app.use(sessionMiddleware); // Añadir middleware de sesión a Socket.io
+
+const server = http.createServer(app); // Crear el servidor con http
+const io = new Server(server); // Inicializar socket.io
 
 app.use(bodyParser.urlencoded({ extended: true })); //Activa body-parser para leer formularios
 app.use(bodyParser.json()); // Activa body-parser para leer JSON
@@ -86,6 +90,7 @@ const PartidaSchema = new mongoose.Schema({
     enum: ['jugador1', 'jugador2', 'empate', 'en_curso'],
     default: 'en_curso'
   },
+  movimientos: [{type: String}], // Array de movimientos en formato FEN o notación algebraica
   tablero: { type: Array, default: [] },
    turno: { type: String, enum: ['blancas', 'negras'], default: 'blancas' } // turno actual
 });
@@ -93,10 +98,12 @@ const PartidaSchema = new mongoose.Schema({
 const Partida = mongoose.model('Partida', PartidaSchema);
 
 //--------------- Configuración de WebSockets (Socket.io) -----------------------------
+
+// Conectar sesiones a sockets
   io.use(sharedSession(sessionMiddleware, {
     autoSave: true // Guarda la sesión automáticamente
   }));
-
+/*
   io.use((socket, next) => {
     const session = socket.request.session;
     if(session && session.userId){
@@ -104,6 +111,7 @@ const Partida = mongoose.model('Partida', PartidaSchema);
     }
     next (new Error('No autenticado'));
   });
+  */
 // Configuración de Socket.io (añadir esto ANTES del server.listen)
 io.on('connection', (socket) => {
   // Manejo de errores en el socket
@@ -124,7 +132,6 @@ io.on('connection', (socket) => {
       });
     }
   });
-
   socket.on('mover-pieza', async (data) => {
     try {
       const partida = await Partida.findByIdAndUpdate(data.partidaId, {
@@ -156,8 +163,12 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Cliente desconectado:', socket.id);
     // se puede añadir lógica para manejar la desconexión o abandonos de partida, como guardar el estado de la partida.
-  })
+  });
 });
+io.on('connection_error', (err) => {
+  console.error('Socket connection error:', err.message);
+});
+
 
 //-------------------------Rutas de Express-------------------------------------------------------------------------------------------
 
@@ -259,7 +270,7 @@ app.get('/partida/:id', async (req, res) => {
 
   res.render('partida' ,{
     tablero: partida.tablero,
-    turno: "blancas",
+    turno: partida.turno,
     partidaId: partida._id,
     usuario: req.session.usuario
   }); 
