@@ -66,9 +66,13 @@ function actualizarListaMovimientos(){
 //----------------TURNOS Y PERSISTENCIA-----------------
 
 function CambiarTurno(pieza, desde, hacia) {
+    // Guardar el estado del tablero anterior antes de modificar
+    const tableroAnterior = JSON.parse(JSON.stringify(tableroActual));
+    const turnoAnterior = turnoActual;
+
+
     turnoActual = turnoActual === "blancas" ? "negras" : "blancas";
     // registrar el movimiento
-
     const notacion = `${numeroMovimiento}. ${desde} → ${hacia}`;
     registroMovimientos.push(notacion);
     actualizarListaMovimientos();
@@ -78,6 +82,7 @@ function CambiarTurno(pieza, desde, hacia) {
 
     document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
     console.log(`Ahora es el turno de: ${turnoActual}`);
+    // Enviar el movimiento al servidor
     socket.emit("mover-pieza",{
       partidaId: partidaId,
       tablero: obtenerEstadoTablero(),
@@ -85,6 +90,29 @@ function CambiarTurno(pieza, desde, hacia) {
       movimiento: notacion
     });
 }
+
+// Modificar el listener de la actualizacion
+socket.on("actualizar-tablero", (data) =>{
+  // Solo actualizar si el turno recibido es diferente al actual
+  if (data.turno !== turnoActual) {
+    tableroActual = data.tablero;
+    turnoActual = data.turno;
+    renderizarTablero(tableroActual);
+    configurarEventosPiezas();
+    configurarEventosCasillas();
+  }
+});
+
+// Añadir manejo de errores
+socket.on("error-movimiento", (error) => {
+    // Revertir al estado anterior
+    tableroActual = tableroAnterior;
+    turnoActual = turnoAnterior;
+    renderizarTablero(tableroActual);
+    configurarEventosPiezas();
+    configurarEventosCasillas();
+    alert(`Error: ${error.error}`);
+});
 /*
 async function guardarTableroEnServidor(tablero) {
   const partidaId = window.partidaId;
@@ -227,14 +255,13 @@ function configurarEventosCasillas() {
       // Actualizar el tablero actual (mover la pieza)
       tableroActual[yDestino][xDestino] = tableroActual[yInicial][xInicial];
       tableroActual[yInicial][xInicial] = null;
-
-      // Cambiar turno, registrar movimiento
-      CambiarTurno(tableroActual[yDestino][xDestino], posInicial, posDestino);
-
-      // Volver a renderizar tablero y reconfigurar eventos
+      // Renderizar inmediatamente el tablero
       renderizarTablero(tableroActual);
       configurarEventosPiezas();
       configurarEventosCasillas();
+
+      // Cambiar turno, registrar movimiento
+      CambiarTurno(tableroActual[yDestino][xDestino], posInicial, posDestino);
 
       piezaArrastrada = null;
       posInicial = null;
