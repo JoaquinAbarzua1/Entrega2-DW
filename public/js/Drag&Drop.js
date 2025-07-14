@@ -6,6 +6,7 @@ let posInicial = null;
 let tableroActual = tableroInicial;
 let turnoActual = turnoInicial;
 
+
 const jugadores = {
     blancas: "Jugador 1",
     negras: "Jugador 2"
@@ -207,31 +208,39 @@ function configurarEventosCasillas() {
   });
 }
 //------------------INICIALIZACIÓN DE EVENTOS---------------------
-document.addEventListener("DOMContentLoaded", function () // espera a que el DOM esté completamente cargado
- {
-        // Unirse a la partida
-        socket.emit("unirse-partida", window.partidaId);
+document.addEventListener("DOMContentLoaded", function () {
+    window.iniciarSocket(); // <-- aquí recién conecta el socket, con sesión ya guardada
 
-        // Escuchar actualizaciones del servidor
-        socket.on("actualizar-tablero", (data) => {
-          tableroActual = data.tablero;
-          turnoActual = data.turno;
+    // Como la conexión puede tardar un momento, escucha el evento "connect"
+    window.socket.on("connect", () => {
+        console.log("🎉 Socket conectado, ahora nos unimos a la partida");
+
+        // Emitir evento para unirse a la partida
+        window.socket.emit("unirse-partida", window.partidaId);
+    });
+
+    // Escuchar actualizaciones del servidor
+    window.socket.on("actualizar-tablero", (data) => {
+        tableroActual = data.tablero;
+        turnoActual = data.turno;
         renderizarTablero(tableroActual);
         configurarEventosPiezas();
         configurarEventosCasillas();
-        });
-
-        // Manejo de errores
-        socket.on("error-movimiento", (error) => {
-            alert(`Error: ${error.error}`);
-            socket.emit("unirse-partida", window.partidaId);
-            });
-                    renderizarTablero(tableroActual);
-        configurarEventosPiezas();
-        configurarEventosCasillas();
-        document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
-        
     });
+
+    // Manejo de errores de movimiento
+    window.socket.on("error-movimiento", (error) => {
+        alert(`Error: ${error.error}`);
+        // Reintentamos unirnos por si perdimos sincronía
+        window.socket.emit("unirse-partida", window.partidaId);
+    });
+
+    // Render inicial y config
+    renderizarTablero(tableroActual);
+    configurarEventosPiezas();
+    configurarEventosCasillas();
+    document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
+});
 
 /* ---------------LOCAL STORAGE------------------- */ // no pescar pq ya no usamos localStorage xd
 

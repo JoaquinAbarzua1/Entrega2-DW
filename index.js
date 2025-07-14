@@ -10,20 +10,29 @@ const mongoose = require('mongoose');
 const http = require('http');
 const { Server } = require('socket.io'); 
 const sharedSession = require('express-socket.io-session'); 
+const mongoStore = require('connect-mongo'); // Para almacenar sesiones en MongoDB
 
+const app = express();
+const PORT = process.env.PORT || 3000;
+const DB_FILE = path.join(__dirname, 'usuarios.json');
 
 // Crear middleware de sesión
 const sessionMiddleware = session({
   secret: 'mi_secreto',
   resave: false,
   saveUninitialized: false,
+  store: mongoStore.create({
+    mongoUrl: 'mongodb+srv://joaquinabarzua:'+ process.env.PASS +'@cluster0.avkv65o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+    collectionName: 'sessions', // Nombre de la colección para almacenar sesiones
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24, // Cambiar a true si se usa HTTPS
+    sameSite: 'lax', // Configuración de SameSite para cookies
+  },
+  
 });
 
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-const DB_FILE = path.join(__dirname, 'usuarios.json');
-
+// Configurar Handlebars como motor de plantillas
 app.engine('handlebars', engine({
   defaultLayout: 'main', partialsDir: path.join(__dirname, 'views', 'partials'), 
   helpers: {
@@ -31,13 +40,18 @@ app.engine('handlebars', engine({
     isWhiteCell: (row, col) => (row + col) % 2 === 0,
     json: (context) => JSON.stringify(context, null, 2) // Helper para serializar objetos a JSON
   }
-
 }));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
-app.use(express.static(path.join(__dirname, 'public')));
+
+// MIDDLEWARES
 app.use(cookieParser());
+app.use(sessionMiddleware); // Añadir middleware de sesión a Socket.io
+app.use(bodyParser.urlencoded({ extended: true })); //Activa body-parser para leer formularios
+app.use(bodyParser.json()); // Activa body-parser para leer JSON
+app.use(express.static(path.join(__dirname, 'public')));
+
 /*
 app.use(session({
   secret: 'mi_secreto',
@@ -46,78 +60,31 @@ app.use(session({
   cookie: {maxAge: 1000 * 60 * 60 * 24,} // Cambiar a true si se usa HTTPS
 })); 
 */
-app.use(sessionMiddleware); // Añadir middleware de sesión a Socket.io
+
+// -----------------------------------------------
+// 🔌 Servidor HTTP + Socket.io
+// -----------------------------------------------
 
 const server = http.createServer(app); // Crear el servidor con http
 const io = new Server(server); // Inicializar socket.io
-
-app.use(bodyParser.urlencoded({ extended: true })); //Activa body-parser para leer formularios
-app.use(bodyParser.json()); // Activa body-parser para leer JSON
-
-//-----------------------Mongoose-----------------------------------------------------------------------------------------------------
-
-//Base de datos
-const UsuarioSchema = new mongoose.Schema({
-  username: String,
-  email: String,
-  nombre: String,
-  apellido: String,
-  birthdate: String,
-  password: String
-});
-
-const Usuario = mongoose.model('Usuario', UsuarioSchema);
-
-mongoose.connect('mongodb+srv://joaquinabarzua:'+process.env.PASS+'@cluster0.avkv65o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => {
-  console.log('Conexión exitosa a MongoDB Atlas')
-})
-.catch(err => {
-  console.error('Error conectando a MongoDB', err)
-});
-
-//Modelo de Partidas
-
-const PartidaSchema = new mongoose.Schema({
-  jugador1: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario", required: true }, 
-  jugador2: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario'}, // luego, cambiar a required: true si se implementa el segundo jugador
-  fechaInicio: {type: Date, default: Date.now },
-  resultado: {
-    type: String,
-    enum: ['jugador1', 'jugador2', 'empate', 'en_curso'],
-    default: 'en_curso'
-  },
-  movimientos: [{type: String}], // Array de movimientos en formato FEN o notación algebraica
-  tablero: { type: Array, default: [] },
-   turno: { type: String, enum: ['blancas', 'negras'], default: 'blancas' } // turno actual
-});
-
-const Partida = mongoose.model('Partida', PartidaSchema);
-
-//--------------- Configuración de WebSockets (Socket.io) -----------------------------
 
 // Conectar sesiones a sockets
   io.use(sharedSession(sessionMiddleware, {
     autoSave: true // Guarda la sesión automáticamente
   }));
-/*
-  io.use((socket, next) => {
-    const session = socket.request.session;
-    if(session && session.userId){
-      return next();
-    }
-    next (new Error('No autenticado'));
-  });
-  */
-// Configuración de Socket.io (añadir esto ANTES del server.listen)
+
+// Middleware para verificar autenticación en cada conexión de socket
+io.use((socket, next) => {
+  console.log('🍪 Cookies recibidas:', socket.request.headers.cookie);
+  console.log('📦 Session en socket:', socket.request.session);
+  if (socket.request.session && socket.request.session.userId) {
+    return next();
+  }
+  next(new Error('No autenticado'));
+});
+
+// Eventos de conexión de socket.io
 io.on('connection', (socket) => {
-  // Manejo de errores en el socket
-  socket.on('error', (error) => {
-    console.error('Error en el socket:', error);
-  });
   console.log('Nuevo cliente conectado:', socket.id);
 
   socket.on('unirse-partida', async (partidaId) => {
@@ -164,10 +131,55 @@ io.on('connection', (socket) => {
     console.log('Cliente desconectado:', socket.id);
     // se puede añadir lógica para manejar la desconexión o abandonos de partida, como guardar el estado de la partida.
   });
+
+    // Manejo de errores en el socket
+  socket.on('error', (error) => {
+    console.error('Error en el socket:', error);
+  });
 });
 io.on('connection_error', (err) => {
   console.error('Socket connection error:', err.message);
 });
+
+
+//-----------------------Mongoose-----------------------------------------------------------------------------------------------------
+mongoose.connect('mongodb+srv://joaquinabarzua:'+process.env.PASS+'@cluster0.avkv65o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => {
+  console.log('Conexión exitosa a MongoDB Atlas')
+})
+.catch(err => {
+  console.error('Error conectando a MongoDB', err)
+});
+
+//Base de datos
+const UsuarioSchema = new mongoose.Schema({
+  username: String,
+  email: String,
+  nombre: String,
+  apellido: String,
+  birthdate: String,
+  password: String
+});
+const PartidaSchema = new mongoose.Schema({
+  jugador1: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario", required: true }, 
+  jugador2: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario'}, // luego, cambiar a required: true si se implementa el segundo jugador
+  fechaInicio: {type: Date, default: Date.now },
+  resultado: {
+    type: String,
+    enum: ['jugador1', 'jugador2', 'empate', 'en_curso'],
+    default: 'en_curso'
+  },
+  movimientos: [{type: String}], // Array de movimientos en formato FEN o notación algebraica
+  tablero: { type: Array, default: [] },
+   turno: { type: String, enum: ['blancas', 'negras'], default: 'blancas' } // turno actual
+});
+
+// Modelos
+const Usuario = mongoose.model('Usuario', UsuarioSchema);
+const Partida = mongoose.model('Partida', PartidaSchema);
 
 
 //-------------------------Rutas de Express-------------------------------------------------------------------------------------------
@@ -187,32 +199,31 @@ app.post('/registro', async (req, res) => { // cambiar nombre a 'register' si ha
   res.redirect('/login')
 });
 
-
 //Ruta GET para mostrar formulario de login
 app.get('/login', (req, res) => {
   res.render('login')
 });
 
-//Ruta POST para autenticar usuario
-/*
-app.post('/login', (req, res) => {
-  res.send('El login debe manejarse en el cliente usando localStorage.');
-});
-*/
 
-//post que usa mongoose
+// Ruta POST para manejar el login
 app.post('/login', async (req, res) => {
   const { username, password } = req.body
-
   try {
     const usuario = await Usuario.findOne({ email: username })
     if (!usuario || !(await bcrypt.compare(password, usuario.password))) {
       return res.send('Credenciales inválidas. <a href="/login">Intentar de nuevo</a>')
     }
-    req.session.userId = usuario._id // Guarda el ID del usuario en la sesión
-    console.log('Usuario logueado:', usuario._id); // se muestran en la consola del servidor
-console.log('req.session.userId:', req.session.userId);
-    res.redirect('/principal')
+    req.session.userId = usuario._id;
+req.session.save((err) => {
+  if (err) {
+    console.error('❌ Error guardando la sesión:', err);
+    return res.send('Error interno. Intenta de nuevo.');
+  }
+  res.redirect('/principal');
+});
+console.log('🔐 Sesión después del login:', req.session);
+
+
   } catch (err) {
     console.error('Error al buscar usuario:', err)
     res.send('Error interno del servidor')
@@ -225,14 +236,24 @@ app.get('/logout', (req, res) => {
   });
 });
 
-
-//Ruta raíz
-//app.get('/', estaLoggeado ,(req, res) => { //hacer funcion estaLogeado
 app.get('/principal',  (req, res) => {
   res.redirect('/');
 });
 app.get('/',  (req, res) => {
   res.render('principal', {  });
+});
+
+//Ruta GET para mostrar formulario de registro
+app.get('/partida', async (req, res) => {
+  if(!req.session.userId) {
+    console.log("No autenticado, redirigiendo a login");
+    return res.redirect('/login');}
+    // Buscar la ultima partida en curso del usuario
+    const partida = await Partida.findOne({ jugador1: req.session.userId, resultado: 'en_curso' });
+  if (!partida) {
+    return res.redirect('/'); // Redirigir a la página principal si no hay partida en curso
+  }
+  res.redirect('/partida/' + partida._id);
 });
 
 app.get('/perfil', (req, res) =>
@@ -250,20 +271,10 @@ app.get('/historia', (req, res) => {
   res.render('historia')
 });
 
-//Ruta GET para mostrar formulario de registro
-app.get('/partida', async (req, res) => {
+app.get('/partida/:id', async (req, res) => {
   if(!req.session.userId) {
     console.log("No autenticado, redirigiendo a login");
     return res.redirect('/login');}
-    // Buscar la ultima partida en curso del usuario
-    const partida = await Partida.findOne({ jugador1: req.session.userId, resultado: 'en_curso' });
-  if (!partida) {
-    return res.redirect('/'); // Redirigir a la página principal si no hay partida en curso
-  }
-  res.redirect('/partida/' + partida._id);
-});
-
-app.get('/partida/:id', async (req, res) => {
   const partidaId = req.params.id;
   const partida = await Partida.findById(partidaId);
   if(!partida) {return res.status(404).send('Partida no encontrada');}
@@ -281,8 +292,11 @@ app.get('/partida/:id', async (req, res) => {
 app.post('/nueva-partida', async (req, res) => {
   console.log("Intentando crear partida, session.userId:", req.session.userId);
   if (!req.session.userId) {
+    /*
     console.log("No autenticado, asignando temporal userId");
     req.session.userId = "687226b98144725e0984dcf6"; // usa aquí un id real de tu colección Usuario
+    */
+   return res.status(401).send('No autenticado');
   }
   const nuevaPartida = new Partida({
     jugador1: req.session.userId,

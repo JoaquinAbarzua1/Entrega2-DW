@@ -1,10 +1,17 @@
-// Crea y exporta la conexión Socket.io
-const socket = io();
+// socket.js
+function iniciarSocket() {
+  const socket = io();
 
-// Escucha evento de conexión
-socket.on("connect", () => {
-  console.log("Conectado al servidor con socket ID:", socket.id);
-});
+  socket.on("connect", () => {
+    console.log("✅ Conectado al servidor con socket ID:", socket.id);
+  });
 
-// Haz disponible `socket` globalmente
-window.socket = socket;
+  socket.on("connect_error", (err) => {
+    console.error("❌ Error al conectar el socket:", err.message);
+  });
+
+  window.socket = socket; // hacerlo global
+}
+
+// Hacer global también iniciarSocket
+window.iniciarSocket = iniciarSocket;
