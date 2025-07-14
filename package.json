@@ -22,7 +22,8 @@
     "express": "^5.1.0",
     "express-handlebars": "^8.0.1",
     "express-session": "^1.18.1",
-    "mongoose": "^8.14.2"
+    "mongoose": "^8.14.2",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "eslint": "^9.27.0",
