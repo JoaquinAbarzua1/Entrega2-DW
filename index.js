@@ -6,12 +6,15 @@ const fs = require('fs');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
+const http = require('http');
+const { Server } = require('socket.io');  
 
-// Añade esto junto con los otros require al inicio (Para usar WebSockets)
-const http = require('http');  // <-- Añadir esta línea
-const { Server } = require('socket.io');  // <-- Añadir esta línea
 
-const app = express()
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
 const PORT = process.env.PORT || 3000;
 const DB_FILE = path.join(__dirname, 'usuarios.json');
 
@@ -43,9 +46,6 @@ app.use(bodyParser.json()); // Activa body-parser para leer JSON
 //-----------------------Mongoose-----------------------------------------------------------------------------------------------------
 
 //Base de datos
-
-const mongoose = require('mongoose');
-
 const UsuarioSchema = new mongoose.Schema({
   username: String,
   email: String,
@@ -85,7 +85,70 @@ const PartidaSchema = new mongoose.Schema({
 
 const Partida = mongoose.model('Partida', PartidaSchema);
 
-//-------------------------Rutas-------------------------------------------------------------------------------------------
+//--------------- Configuración de WebSockets (Socket.io) -----------------------------
+
+// Configuración de Socket.io (añadir esto ANTES del server.listen)
+io.on('connection', (socket) => {
+  // Manejo de errores en el socket
+  socket.on('error', (error) => {
+    console.error('Error en el socket:', error);
+  });
+  console.log('Nuevo cliente conectado:', socket.id);
+
+  socket.on('unirse-partida', async (partidaId) => {
+    socket.join(partidaId);
+    console.log(`Cliente ${socket.id} unido a partida ${partidaId}`);
+    
+    const partida = await Partida.findById(partidaId);
+    if (partida) {
+      socket.emit('estado-inicial', {
+        tablero: partida.tablero,
+        turno: partida.turno
+      });
+    }
+  });
+
+  socket.on('mover-pieza', async (data) => {
+    try {
+      const partida = await Partida.findByIdAndUpdate(data.partidaId, {
+        $set: {
+          tablero: data.tablero,
+          turno: data.turno
+        }
+      }, 
+      { new: true });
+      if (!partida) return;
+      /* para actualizar el tablero y turno en la base de datos
+      partida.tablero = data.tablero;
+      partida.turno = data.turno;
+      await partida.save();
+      */
+
+      io.to(data.partidaId).emit('actualizar-tablero', {
+        tablero: partida.tablero,
+        turno: partida.turno,
+        ultimoMovimiento: data.Movimiento
+      });
+    } catch (error) {
+      console.error('Error al mover pieza:', error);
+      socket.emit('error-movimiento', {error: 'Error al mover la pieza. Inténtalo de nuevo.'});
+    }
+  });
+
+  io.use((socket, next) => {
+    const session = socket.request.session;
+    if(session && session.userId){
+      return next();
+    }
+    next (new Error('No autenticado'));
+  });
+  socket.on('disconnect', () => {
+    console.log('Cliente desconectado:', socket.id);
+    // se puede añadir lógica para manejar la desconexión o abandonos de partida, como guardar el estado de la partida.
+  })
+});
+
+//-------------------------Rutas de Express-------------------------------------------------------------------------------------------
 
 //Ruta GET para mostrar formulario de registro
 app.get('/registro', (req, res) => {
@@ -203,47 +266,6 @@ app.post('/nueva-partida', async (req, res) => {
   await nuevaPartida.save();
   res.json({ success: true, partidaId: nuevaPartida._id });
 });
-
-app.get('/api/partidas/:id/tablero', async (req, res) => {
-  try {
-    const partida = await Partida.findById(req.params.id);
-    if (!partida) return res.status(404).json({ success: false, error: 'Partida no encontrada' });
-
-    res.json({
-      success: true,
-      tablero: partida.tablero,
-      turno: partida.turno
-    });
-  } catch (err) {
-    console.error('Error al obtener tablero:', err);
-    res.status(500).json({ success: false, error: 'Error interno' });
-  }
-});
-
-
-app.post('/api/partidas/:id/tablero', async (req, res) => {
-  try {
-    const partida = await Partida.findById(req.params.id);
-    if (!partida) return res.status(404).json({ success: false, error: 'Partida no encontrada' });
-
-    // req.body debe traer { tablero, turno }
-    const { tablero, turno } = req.body;
-    if (!tablero || !turno) {
-      return res.status(400).json({ success: false, error: 'Faltan datos' });
-    }
-
-    partida.tablero = tablero;
-    partida.turno = turno;
-
-    await partida.save();
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Error al actualizar tablero:', err);
-    res.status(500).json({ success: false, error: 'Error interno' });
-  }
-});
-
 //RUTA PARA RENDIRSE
 app.post('/rendirse', (req,res)=>{
   //Logica para registrar rendirse
@@ -252,7 +274,6 @@ app.post('/rendirse', (req,res)=>{
     result: 'Derrota por rendicion' , success: true
   });
 });
-
 //RUTA PARA EMPATAR
 app.post('/empatar', (req,res) =>{
 // Cuando se juegue con otro jugador se tendra que implementar algo que le notifique que su oponente quiere tablas xd
@@ -300,48 +321,6 @@ function crearTablero() {
   
     return tablero;
 }
-
-//---------------------------------------------------------------------------------------------------------------------------------------
-//Iniciar el servidor
-
-const server = http.createServer(app);
-const io = new Server(server);
-
-// Configuración de Socket.io (añadir esto ANTES del server.listen)
-io.on('connection', (socket) => {
-  console.log('Nuevo cliente conectado:', socket.id);
-
-  socket.on('unirse-partida', async (partidaId) => {
-    socket.join(partidaId);
-    console.log(`Cliente ${socket.id} unido a partida ${partidaId}`);
-    
-    const partida = await Partida.findById(partidaId);
-    if (partida) {
-      socket.emit('estado-inicial', {
-        tablero: partida.tablero,
-        turno: partida.turno
-      });
-    }
-  });
-
-  socket.on('mover-pieza', async (data) => {
-    try {
-      const partida = await Partida.findById(data.partidaId);
-      if (!partida) return;
-
-      partida.tablero = data.tablero;
-      partida.turno = data.turno;
-      await partida.save();
-
-      io.to(data.partidaId).emit('actualizar-tablero', {
-        tablero: partida.tablero,
-        turno: partida.turno
-      });
-    } catch (error) {
-      console.error('Error al mover pieza:', error);
-    }
-  });
-});
 
 server.listen(PORT, () => {
   console.log(`Servidor con WebSockets escuchando en http://localhost:${PORT}`);

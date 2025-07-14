@@ -3,16 +3,13 @@ let registroMovimientos=[];
 let numeroMovimiento =1;
 let piezaArrastrada = null;
 let posInicial = null;
-
-// Variables de estado
+let tableroActual = tableroInicial;
 let turnoActual = turnoInicial;
+
 const jugadores = {
     blancas: "Jugador 1",
     negras: "Jugador 2"
 };
-
-// Tablero inicial
-let tableroActual = tableroInicial;
 
 //-------RENDIRIZAR TABLERO-----------
 
@@ -81,9 +78,14 @@ function CambiarTurno(pieza, desde, hacia) {
 
     document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
     console.log(`Ahora es el turno de: ${turnoActual}`);
-    guardarTableroEnServidor(obtenerEstadoTablero());
+    socket.emit("mover-pieza",{
+      partidaId: partidaId,
+      tablero: obtenerEstadoTablero(),
+      turno: turnoActual,
+      movimiento: notacion
+    });
 }
-
+/*
 async function guardarTableroEnServidor(tablero) {
   const partidaId = window.partidaId;
   if (!partidaId) {
@@ -97,6 +99,7 @@ async function guardarTableroEnServidor(tablero) {
     body: JSON.stringify({ tablero, turno: turnoActual })
   });
 }
+  FUNCION A SER ELIMINADA  */
 
 
 function obtenerEstadoTablero() {
@@ -115,7 +118,7 @@ function obtenerEstadoTablero() {
     });
     return matriz;
 }
-
+/*
 setInterval(async () => {
   try {
     const respuesta = await fetch(`/api/partidas/${partidaId}/tablero`);
@@ -137,6 +140,7 @@ setInterval(async () => {
     console.error("Error al sincronizar tablero:", error);
   }
 }, 5000); // cada 5 segundos
+ A SER ELIMINADO  */
 
 //------------------EVENTOS DE DRAG & DROP---------------------
 
@@ -240,9 +244,29 @@ function configurarEventosCasillas() {
 //------------------INICIALIZACIÓN DE EVENTOS---------------------
 document.addEventListener("DOMContentLoaded", function () // espera a que el DOM esté completamente cargado
  {
+        // Unirse a la partida
+        socket.emit("unirse-partida", window.partidaId);
+
+        // Escuchar actualizaciones del servidor
+        socket.on("actualizar-tablero", (data) => {
+          tableroActual = data.tablero;
+          turnoActual = data.turno;
         renderizarTablero(tableroActual);
         configurarEventosPiezas();
         configurarEventosCasillas();
+        });
+
+        // Manejo de errores
+        socket.on("error-movimiento", (error) => {
+            alert(`Error: ${error.error}`);
+            socket.emit("unirse-partida", window.partidaId);
+        });
+
+        // Renderizado inicial
+        renderizarTablero(tableroActual);
+        configurarEventosPiezas();
+        configurarEventosCasillas();
+
         document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
     });
 

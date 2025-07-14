@@ -57,14 +57,16 @@
         <a href="desarrolladores">Desarrolladores</a>
       </nav>
     </footer> 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
+      // Variables globales para el tablero y el turno
+      const socket = io();
         const tableroInicial = {{{json tablero}}};
         const turnoInicial = "{{turno}}";
         const partidaId = "{{partidaId}}";
         window.partidaId = "{{partidaId}}";
     </script>
         {{! ---------------------------------------------FUNCIONES DE MOVIMIENTO----------------------------------------------------------------------}}
-
     <script src="/js/Movimientos.js"></script>
 
  {{! --------------------------------------------- FUNCIONES PARA DRAG & DROP.......---------------------------------------------------------------------}}
