@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // Botón para crear una nueva partida
     const btnNuevaPartida = document.getElementById("btnNuevaPartida");
     if (btnNuevaPartida) {
        btnNuevaPartida.addEventListener("click", async () => {
@@ -19,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
     }
-
+    // Botón para rendirse
     const btnRendirse = document.getElementById("btnRendirse");
     if (btnRendirse) {
         btnRendirse.addEventListener("click", async () => {
@@ -37,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
+    // Botón para ofrecer tablas
     const btnEmpatar = document.getElementById("btnEmpatar");
     if (btnEmpatar) {
         btnEmpatar.addEventListener("click", async () => {
@@ -54,4 +55,21 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+    // Botón para eliminar la partida
+    const btnEliminar = document.getElementById("btnEliminarPartida");
+if (btnEliminar) {
+  btnEliminar.addEventListener("click", async () => {
+    if (confirm("¿Seguro que quieres eliminar esta partida?")) {
+      const id = btnEliminar.dataset.partidaId;
+      const res = await fetch(`/partida/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        alert("Partida eliminada");
+        window.location.href = "/"; // volver al inicio
+      } else {
+        alert("No se pudo eliminar la partida");
+      }
+    }
+  });
+}
+
 });

@@ -314,17 +314,23 @@ app.get('/partida/:id', async (req, res) => {
 });
 
 // Nueva ruta, eliminar partida
-app.delete('/api/eliminar-partida/:id', async (req, res) => {
+app.delete('/partida/:id', async (req, res) => {
   if (!req.session.userId) return res.status(401).send('No autenticado');
   const partida = await Partida.findById(req.params.id);
   if (!partida) return res.status(404).send('Partida no encontrada');
-  if (String(partida.jugador1) !== String(req.session.userId)) return res.status(403).send('No autorizado');
+
+  if (partida.jugador1.toString() !== req.session.userId) {
+    return res.status(403).send('Solo el creador puede eliminar la partida');
+  }
+
   await Partida.deleteOne({ _id: req.params.id });
   res.json({ success: true });
 });
 
+
 // Nueva ruta, estado de la partida cada 5s
 app.get('/api/estado-partida/:id', async (req, res) => {
+  if (!req.session.userId) return res.status(401).send('No autenticado');
   const partida = await Partida.findById(req.params.id);
   if (!partida) return res.status(404).send('Partida no encontrada');
   res.json({
