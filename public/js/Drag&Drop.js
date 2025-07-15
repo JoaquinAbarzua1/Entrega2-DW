@@ -207,7 +207,31 @@ function configurarEventosCasillas() {
     });
   });
 }
+/* // Verificar sesión antes de iniciar socket
+document.addEventListener("DOMContentLoaded", async () => {
+  console.log("⌛ Verificando sesión antes de iniciar socket...");
+  try {
+    const res = await fetch("/api/yo");
+    if (res.ok) {
+      const data = await res.json();
+      console.log("✅ Sesión confirmada, userId:', data.userId");
+      window.iniciarSocket(); // conecta el socket SOLO si la sesión está OK
+    } else {
+      console.error("⚠️ Usuario NO autenticado, redirigiendo a login");
+      window.location.href = "/login";
+    }
+  } catch (e) {
+    console.error("❌ Error verificando sesión:", e);
+    window.location.href = "/login";
+  }
+});
+*/
+
+
+
+
 //------------------INICIALIZACIÓN DE EVENTOS---------------------
+
 document.addEventListener("DOMContentLoaded", function () {
     window.iniciarSocket(); // <-- aquí recién conecta el socket, con sesión ya guardada
 
@@ -240,7 +264,37 @@ document.addEventListener("DOMContentLoaded", function () {
     configurarEventosPiezas();
     configurarEventosCasillas();
     document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
-});
+
+    setInterval(async () => {
+    try {
+        const res = await fetch(`/api/partida/${window.partidaId}`);
+        if (res.ok) {
+            const data = await res.json();
+            // Actualizar solo si cambia el tablero o turno (opcional pero más limpio)
+            tableroActual = data.tablero;
+            turnoActual = data.turno;
+            renderizarTablero(tableroActual);
+            configurarEventosPiezas();
+            configurarEventosCasillas();
+            document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
+        } else {
+            console.error("No se pudo obtener el estado de la partida");
+        }
+    } catch (err) {
+        console.error("Error consultando estado de la partida:", err);
+    }
+}, 5000); // 5000 ms = 5 segundos
+}
+
+); 
+
+
+
+
+
+
+
+
 
 /* ---------------LOCAL STORAGE------------------- */ // no pescar pq ya no usamos localStorage xd
 

@@ -1,6 +1,10 @@
 // socket.js
 function iniciarSocket() {
-  const socket = io();
+  const socket = io({ 
+      withCredentials: true,
+      transports: ["websocket"] // Asegura que se use WebSocket como transporte
+    } 
+  );
 
   socket.on("connect", () => {
     console.log("✅ Conectado al servidor con socket ID:", socket.id);

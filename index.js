@@ -82,16 +82,24 @@ const io = new Server(server,{
 // Middleware para verificar autenticación en cada conexión de socket
 io.use((socket, next) => {
   console.log('🍪 Cookies recibidas:', socket.request.headers.cookie);
-  console.log('📦 Session en socket:', socket.request.session);
-  if (socket.request.session && socket.request.session.userId) {
-    return next();
+  console.log('📦 session en handshake:', socket.request.session);
+  if (!socket.request.session) {
+    console.log('❌ NO hay session');
+    return next(new Error('No session'));
   }
-  next(new Error('No autenticado'));
+  if (!socket.request.session.userId) {
+    console.log('❌ session existe pero SIN userId');
+    return next(new Error('No userId'));
+  }
+  console.log('✅ session OK, userId:', socket.request.session.userId);
+  next();
 });
+
 
 // Eventos de conexión de socket.io
 io.on('connection', (socket) => {
   console.log('Nuevo cliente conectado:', socket.id);
+  console.log("📦 session al conectar:", socket.request.session);
 
   socket.on('unirse-partida', async (partidaId) => {
     socket.join(partidaId);
@@ -106,8 +114,18 @@ io.on('connection', (socket) => {
     }
   });
 socket.on('mover-pieza', async (data) => {
+  console.log('Movimiento recibido:', data);
+  console.log('Session en mover-pieza:', socket.request.session);
+  if (!socket.request.session || !socket.request.session.userId) {
+      console.log("❌ No hay userId en session. Aquí falla la persistencia.");
+      return;
+    }
   try {
-    const partida = await Partida.findById(data.partidaId);
+    const partida = await Partida.findByIdAndUpdate(
+        data.partidaId,
+        { $set: { tablero: data.tablero, turno: data.turno } },
+        { new: true }
+      );
     if (!partida) return;
 
     // Validar que el que mueve sea jugador que tiene el turno
@@ -329,16 +347,22 @@ app.delete('/partida/:id', async (req, res) => {
 
 
 // Nueva ruta, estado de la partida cada 5s
-app.get('/api/estado-partida/:id', async (req, res) => {
+app.get('/api/partida/:id', async (req, res) => {
   if (!req.session.userId) return res.status(401).send('No autenticado');
   const partida = await Partida.findById(req.params.id);
   if (!partida) return res.status(404).send('Partida no encontrada');
-  res.json({
-    tablero: partida.tablero,
-    turno: partida.turno
-  });
+  res.json({ tablero: partida.tablero, turno: partida.turno });
 });
 
+// Ruta para confirmar si la sesión está activa
+app.get('/api/yo', (req, res) => {
+  if (req.session && req.session.userId) {
+    console.log('✅ /api/yo confirma session.userId:', req.session.userId);
+    return res.json({ userId: req.session.userId });
+  }
+  console.log('❌ /api/yo: no autenticado');
+  res.status(401).send('No autenticado');
+});
 
 // RUTA PARA NUEVA PARTIDA 
 app.post('/nueva-partida', async (req, res) => {
