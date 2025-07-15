@@ -287,7 +287,7 @@ document.addEventListener("DOMContentLoaded", function () {
     configurarEventosPiezas();
     configurarEventosCasillas();
     document.getElementById("jugador-actual").textContent = jugadores[turnoActual];
-
+/*
     setInterval(async () => {
     try {
         const res = await fetch(`/api/partida/${window.partidaId}`);
@@ -306,7 +306,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (err) {
         console.error("Error consultando estado de la partida:", err);
     }
-}, 5000); // 5000 ms = 5 segundos
+}, 5000); // 5000 ms = 5 segundos */
 }
 
 ); 

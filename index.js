@@ -80,6 +80,7 @@ const io = new Server(server,{
   }));
 
 // Middleware para verificar autenticación en cada conexión de socket
+/*
 io.use((socket, next) => {
   console.log('🍪 Cookies recibidas:', socket.request.headers.cookie);
   console.log('📦 session en handshake:', socket.request.session);
@@ -94,7 +95,7 @@ io.use((socket, next) => {
   console.log('✅ session OK, userId:', socket.request.session.userId);
   next();
 });
-
+*/
 
 // Eventos de conexión de socket.io
 io.on('connection', (socket) => {
@@ -116,11 +117,11 @@ io.on('connection', (socket) => {
 socket.on('mover-pieza', async (data) => {
   console.log('Movimiento recibido:', data);
   console.log('Session en mover-pieza:', socket.request.session);
+  /*
   if (!socket.request.session || !socket.request.session.userId) {
       console.log("❌ No hay userId en session. Aquí falla la persistencia.");
       return;
-    }
-  try {
+    } */
     const partida = await Partida.findByIdAndUpdate(
         data.partidaId,
         { $set: { tablero: data.tablero, turno: data.turno } },
@@ -129,9 +130,8 @@ socket.on('mover-pieza', async (data) => {
     if (!partida) return;
 
     // Validar que el que mueve sea jugador que tiene el turno
-    const userId = String(socket.request.session.userId);
-    const esTurnoJugador1 = partida.turno === 'blancas' && String(partida.jugador1) === userId;
-    const esTurnoJugador2 = partida.turno === 'negras' && String(partida.jugador2) === userId;
+    const esTurnoJugador1 = partida.turno === 'blancas'
+    const esTurnoJugador2 = partida.turno === 'negras' 
     if (!(esTurnoJugador1 || esTurnoJugador2)) {
       return socket.emit('error-movimiento', {error: 'No es tu turno'});
     }
@@ -146,10 +146,6 @@ socket.on('mover-pieza', async (data) => {
       turno: partida.turno,
       ultimoMovimiento: data.Movimiento
     });
-  } catch (error) {
-    console.error('Error al mover pieza:', error);
-    socket.emit('error-movimiento', {error: 'Error al mover la pieza'});
-  }
 });
 
 
@@ -439,7 +435,7 @@ function crearTablero() {
 }
 
 server.listen(PORT, () => {
-  console.log(`Servidor con WebSockets escuchando en http://localhost:${PORT}`);
+  console.log(`Servidor con WebSockets escuchando en http://localhost:${PORT}/login`);
 });
 
 /*
