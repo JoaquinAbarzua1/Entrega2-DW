@@ -211,11 +211,17 @@ function configurarEventosCasillas() {
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("⌛ Verificando sesión antes de iniciar socket...");
   try {
-    const res = await fetch("/api/yo");
+    const res = await fetch("/api/yo", {
+      credentials: "include" // Asegura que se envíen cookies
+    });
     if (res.ok) {
       const data = await res.json();
-      console.log("✅ Sesión confirmada, userId:', data.userId");
-      window.iniciarSocket(); // conecta el socket SOLO si la sesión está OK
+      console.log("✅ Sesión confirmada, userId:", data.userId);
+      const socket = iniciarSocket();
+      socket.connect(); // Ahora conectamos manualmente
+      
+      // Configura los listeners del socket aquí
+      configurarSocketListeners(socket);
     } else {
       console.error("⚠️ Usuario NO autenticado, redirigiendo a login");
       window.location.href = "/login";
@@ -225,10 +231,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "/login";
   }
 });
+
+function configurarSocketListeners(socket) {
+  socket.on("connect", () => {
+    console.log("🎉 Socket conectado, uniéndose a partida");
+    socket.emit("unirse-partida", window.partidaId);
+  });
+
+  socket.on("actualizar-tablero", (data) => {
+    tableroActual = data.tablero;
+    turnoActual = data.turno;
+    renderizarTablero(tableroActual);
+    configurarEventosPiezas();
+    configurarEventosCasillas();
+  });
+
+  socket.on("error-movimiento", (error) => {
+    alert(`Error: ${error.error}`);
+    socket.emit("unirse-partida", window.partidaId);
+  });
+}
 */
-
-
-
 
 //------------------INICIALIZACIÓN DE EVENTOS---------------------
 
@@ -287,8 +310,6 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 
 ); 
-
-
 
 
 

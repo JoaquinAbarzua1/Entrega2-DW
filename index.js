@@ -69,8 +69,8 @@ const server = http.createServer(app); // Crear el servidor con http
 const io = new Server(server,{
   cors: {
     origin: 'http://localhost:3000', // Permitir todas las conexiones CORS
-    credentials: true
-     // Métodos permitidos -> methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
   }
 }); // Inicializar socket.io
 
@@ -85,7 +85,7 @@ io.use((socket, next) => {
   console.log('📦 session en handshake:', socket.request.session);
   if (!socket.request.session) {
     console.log('❌ NO hay session');
-    return next(new Error('No session'));
+    return next(new Error('No session')); 
   }
   if (!socket.request.session.userId) {
     console.log('❌ session existe pero SIN userId');
